@@ -1,0 +1,196 @@
+{% extends "DAC/_layout.html" %}
+
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for('dac.index', dac_id=dac_id) }}">首页</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" style="line-height: 45px">用户信息
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+<!-- top bar username -->
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height" style="text-align: left">{{ user_info.username }}</h5>
+        <span class="text-white font-size-12" style="text-align: left">{{ user_info.email }}</span>
+    </div>
+{% endblock %}
+
+<!-- content -->
+
+{% block content %}
+<div class="content-page">
+    <div class="content">
+
+        <!-- Start Content-->
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box">
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);"></a></li>
+                                <li class="breadcrumb-item"><a href="javascript: void(0);" class="i18n" name="my_wallet"></a></li>
+                                <li class="breadcrumb-item active i18n" id="wallet" name="my_wallet"></li>
+                            </ol>
+                        </div>
+                        <h4 class="page-title i18n" name="my_wallet"></h4>
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        <h4 class="header-title i18n" name="wallet_info"></h4>
+                        <div class="todo-task-lists mb-0 p-0">
+                            <div class="d-flex align-items-center">
+                                <div class="media-support-info" style="margin: 25px 0 25px 0">
+                                    <h6 style="font-size: 16px; text-align: left"><span class="i18n" name="token_address"></span><span style="font-size: 13px">：{{ user_info.eth }}</span></h6>
+                                    <h6 style="font-size: 16px; text-align: left"><span class="i18n" name="token_balance"></span>：{{ balance }} M</h6>
+                                    <h6 style="font-size: 16px; text-align: left"><span class="i18n" name="eth_balance"></span>：{{ eth_balance }} </h6>
+                                </div>
+{#                                    <button type="button" class="btn btn-info col-sm-1">质押</button>#}
+                                <div class="col-sm-1"></div>
+                            </div>
+                            <button type="button" class="btn btn-warning col-sm-1 i18n" name="transfer" onclick="_transfer('{{ dac_id }}')"></button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        <h4 class="header-title i18n" name="t_r"></h4>
+                        <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th>Txn Hash</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Value</th>
+                                        <th>time</th>
+                                    </tr>
+                                    {% for transfer in transfer_info %}
+                                    <tr>
+                                        <td>{{ transfer.transfer_hash }}</td>
+                                        <td>{{ transfer.transfer_from }}</td>
+                                        <td>{{ transfer.transfer_to }}</td>
+                                        <td>{{ transfer.amount }}M Token</td>
+                                        <td>{{ transfer.ctime }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function(){
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+         })
+        function _transfer(dac_id) {
+            if($("#wallet").text() === "我的钱包"){
+                _sweet_alert_with_buttons(
+                '转账',
+                '<form id="transfer_form">\n' +
+                '{{ transfer_form.csrf_token }}\n' +
+                '<input type="password" class="form-control mb-0" name="private_key" placeholder="您的私钥">\n' +
+                '<input type="text" class="form-control mb-0" id="eth" name="receiver_eth" placeholder="收款人（公钥）">\n' +
+                '<input type="text" class="form-control mb-0" name="amount" id="balance" placeholder="转账金额（M）">\n' +
+                '</form>',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    let balance = $("#balance").val();
+                    let eth = $("#eth").val();
+                    let formData = $("#transfer_form").serialize();
+                    if (isConfirm === false){
+                        _post("/member/" + dac_id +"/info", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                tip(balance + "M Token, 已从您的账户转到" + eth )
+                                _sweet_alert_notify('success', '转账成功', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify(res[1]);
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                'Transfer',
+                '<form id="transfer_form">\n' +
+                '{{ transfer_form.csrf_token }}\n' +
+                '<input type="password" class="form-control mb-0" name="private_key" placeholder="Your Private Key">\n' +
+                '<input type="text" class="form-control mb-0" id="eth" name="receiver_eth" placeholder="To Public Key">\n' +
+                '<input type="text" class="form-control mb-0" name="amount" id="balance" placeholder="Amount">\n' +
+                '</form>',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    let balance = $("#balance").val();
+                    let eth = $("#eth").val();
+                    let formData = $("#transfer_form").serialize();
+                    if (isConfirm === false){
+                        _post("/member/" + dac_id +"/info", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                tip(balance + "M Token, 已从您的账户转到" + eth )
+                                _sweet_alert_notify('success', 'Success', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify(res[1]);
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+        }
+    </script>
+{% endblock %}

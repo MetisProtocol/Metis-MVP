@@ -1,0 +1,457 @@
+{% from "macro.html" import display_work_status %}
+{% extends "DAC/_layout.html" %}
+
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for('dac.index', dac_id=dac_id) }}"></a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" style="line-height: 45px"></li>
+                <li class="breadcrumb-item active" aria-current="page" style="line-height: 45px"></li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+<!-- top bar username -->
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height">{{ user_info.username }}</h5>
+        <span class="text-white font-size-12">{{ user_info.email }}</span>
+    </div>
+{% endblock %}
+
+<!-- content -->
+
+{% block content %}
+    <div class="content-page">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box">
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">DAC</a></li>
+                                <li class="breadcrumb-item"><a href="javascript: void(0);" class="i18n" name="tasks_list"></a></li>
+                                <li class="breadcrumb-item active i18n" name="published_task"></li>
+                            </ol>
+                        </div>
+                        <h4 class="page-title i18n" name="published_task"></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        <div class="iq-card-header d-flex justify-content-between">
+{#                             <div class="iq-card-title">#}
+{#                                 <h4 class="card-title">已发布的工作</h4>#}
+{#                             </div>#}
+                        </div>
+                        <div class="iq-card-body">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th class="i18n" name="no." id="no"></th>
+                                            <th class="i18n" name="name"></th>
+                                            <th class="i18n" name="create_date"></th>
+                                            <th class="i18n" name="status"></th>
+                                            <th class="i18n" name="staked"></th>
+                                            <th class="i18n" name="operate"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for work in works %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ work.work_name }}</td>
+                                            <td>{{ work.work_ctime }}</td>
+                                            {% if not work.is_active %}
+                                                <td><span class="badge badge-info i18n" name="to_activate"></span></td>
+                                            {% else %}
+                                                <td>{{ display_work_status(work.work_status, work.is_promise) }}</td>
+                                            {% endif %}
+                                            <td>{{ work.work_excitation }} M Token</td>
+                                            {% if work.work_status == 1 and not work.is_promise %}
+                                            <td>
+                                                <button class="btn btn-info mr-3 i18n" name="stake_my_commitment" onclick="_claim_promise_btn('{{ work.work_publisher }}', '{{ work.work_participants }}', '{{ work.work_id }}')"></button>
+                                                <button class="btn btn-info i18n" name="tasts_statement" onclick="_work_detail('/proposal/{{ dac_id }}/{{ work.work_id }}/info')" type="button">
+
+                                                </button>
+                                            </td>
+                                            {% endif %}
+{#                                            <td>0x610Bb1573d1046FCb8A</td>#}
+
+
+                                            {% if not work.is_active %}
+                                                <td>
+                                                    <button class="btn btn-info mr-3 i18n" name="activate" onclick="_active_work_btn('{{ work.work_excitation }}', '{{ work.work_id }}', '{{ dac_id }}')"></button>
+                                                    <button class="btn btn-info i18n" name="tasts_statement" onclick="_work_detail('/proposal/{{ dac_id }}/{{ work.work_id }}/info')" type="button">
+
+                                                    </button>
+                                                <td>
+
+                                            </td>
+                                            {% elif work.review  %}
+                                                <td>
+                                                    <button class="btn btn-info i18n" name="approve" onclick="_review('{{ work.work_id }}','{{ dac_id }}')"></button>
+                                                    <button class="btn btn-info i18n" name="check_deliverables" onclick="_work_detail('/proposal/{{ dac_id }}/{{ work.work_id }}/info')" type="button">
+
+                                                    </button>
+                                                <td>
+                                            </td>
+                                            {% elif work.work_status == 3 or work.work_status == 4 %}
+                                                <td>
+                                                    <button class="btn btn-info i18n" name="stettled" onclick="_withdraw('{{ work.work_id }}','{{ dac_id }}', '{{ work.work_excitation }}')"></button>
+                                                    <button class="btn btn-info i18n" name="check_deliverables" onclick="_work_detail('/proposal/{{ dac_id }}/{{ work.work_id }}/info')" type="button">
+
+                                                </button>
+                                                </td>
+                                            {% elif work.work_status == 0 %}
+                                                <td>
+                                                    <button class="btn btn-info i18n" name="tasts_statement" onclick="_work_detail('/proposal/{{ dac_id }}/{{ work.work_id }}/info')" type="button">
+
+                                                </button>
+                                                </td>
+                                            {% elif work.work_status == 6 %}
+                                                <td>
+                                                    <button class="btn btn-info i18n" name="check_deliverables" onclick="_work_detail('/proposal/{{ dac_id }}/{{ work.work_id }}/info')" type="button">
+
+                                                </button>
+                                                </td>
+                                            {% endif %}
+
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form class="mt-4" id="active_work_form" style="display: none">
+                    {{ excitation_form.csrf_token }}
+                    <div class="form-group">
+                        <label for="active_dac_id">DAC ID</label>
+                        <input type="text" id="active_dac_id" name="active_dac_id">
+                    </div>
+                    <div class="form-group">
+                        <label for="active_work_id">work ID</label>
+                        <input type="text" id="active_work_id" name="active_work_id">
+                    </div>
+                </form>
+                <form class="mt-4" id="review_work_form">
+
+                </form>
+                <form class="mt-4" id="claimPromise" style="display: none">
+                    {{ publisher_claim_promise_form.csrf_token }}
+                    <div class="form-group">
+                        <label for="publisher">publisher</label>
+                        <input type="text" id="publisher" name="publisher">
+                    </div>
+                    <div class="form-group">
+                        <label for="participants">participants</label>
+                        <input type="text" id="participants" name="participants">
+                    </div>
+                    <div class="form-group">
+                        <label for="claimForm_workID">work_id</label>
+                        <input class="form-control" id="claimForm_workID" name="work_id" value="">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+<!-- script -->
+{% block script %}
+    <script>
+    $(function(){
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+         })
+        _switch_sub_menu("_proposal_list", "_sub_proposal_list_published");
+        function _active_work_btn(excitation, work_id, dac_id){
+            let notify_content = "您需要质押" + excitation + " M Token工作激励来激活此工作\n激活之前请先完善工作描述";
+            let notify_content1 = "Please stake " + excitation + " M Token incentives to activate the task";
+            if($("#no").text() === "编号"){
+               _sweet_alert_with_buttons(
+                "激活工作",
+                notify_content,
+                "warning",
+                "确定",
+                "取消",
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        console.log("confirm");
+                        _active_work(work_id, dac_id, excitation);
+                        // _active_work
+                    }
+                    else{
+                        // cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }else{
+               _sweet_alert_with_buttons(
+                "Activate Task",
+                notify_content1,
+                "warning",
+                "OK",
+                "Cancel",
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        console.log("confirm");
+                        _active_work(work_id, dac_id, excitation);
+                        // _active_work
+                    }
+                    else{
+                        // cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }
+        }
+        function _active_work(work_id, dac_id, excitation) {
+            // 提交post请求，质押M token，标记该工作状态为已激活，任务申领方可以看到该任务
+            document.getElementById("active_dac_id").value = dac_id;
+            document.getElementById("active_work_id").value = work_id;
+            let formData = $("#active_work_form").serialize();
+            console.log(formData);
+            _post('/proposal/claim_excitation', formData, function (resp) {
+                let res = $.parseJSON(resp);
+                if (res.code === 'ok'){
+                    _get('/balance', '', function (resp) {
+                        let res = $.parseJSON(resp);
+                        tip("已质押" + excitation + "M Token, 余额为" + res + "M Token")
+                    });
+                    if($("#no").text() === "编号"){
+                    _sweet_alert_notify('success', '成功激活', '该工作已被激活');}else{
+                        _sweet_alert_notify('success', 'Success', '');
+                    }
+                    _fresh_current_page();
+                }
+                else{
+                    _sweet_alert_notify('error', '激活失败', res.message[0]);
+                }
+            });
+        }
+        function _review(work_id, dac_id) {
+            // 审核该工作
+            if($("#no").text() === "编号"){
+                _sweet_alert_with_buttons(
+                '审核通过',
+                '是否确认审核通过',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    $("#active_work_id").val(work_id);
+                    $("#active_dac_id").val(dac_id);
+                    let formData = $("#active_work_form").serialize();
+                    if (isConfirm === false){
+                        _post("/proposal/review", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                _sweet_alert_notify('success', '审核通过成功', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                console.log("err");
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+            else{
+               _sweet_alert_with_buttons(
+                '',
+                'Please review the deliverables first and confirm the task is finished.',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    $("#active_work_id").val(work_id);
+                    $("#active_dac_id").val(dac_id);
+                    let formData = $("#active_work_form").serialize();
+                    if (isConfirm === false){
+                        _post("/proposal/review", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                _sweet_alert_notify('success', 'Success', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                console.log("err");
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+        }
+        function _work_detail(wiki_uri) {
+            window.location.href=wiki_uri
+        }
+        function _claim_promise_btn(publisher, participants, work_id) {
+            if($("#no").text() === "编号"){
+                _sweet_alert_with_buttons(
+                '质押保证金',
+                '首次同对方建立合作，需要质押10 M Token作为保证金\n是否质押？',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        document.getElementById("publisher").value = publisher;
+                        document.getElementById("claimForm_workID").value = work_id;
+                        document.getElementById("participants").value = participants;
+                        let formData = $("#claimPromise").serialize();
+                        console.log('confirm');
+                        _claim_promise(formData);
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+            else{
+               _sweet_alert_with_buttons(
+                'Stake commitment',
+                'First time to work with your collaborators, please stake 10 M Token to set up the connection.',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        document.getElementById("publisher").value = publisher;
+                        document.getElementById("claimForm_workID").value = work_id;
+                        document.getElementById("participants").value = participants;
+                        let formData = $("#claimPromise").serialize();
+                        console.log('confirm');
+                        _claim_promise(formData);
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+        }
+        function _withdraw(work_id, dac_id, excitation) {
+            if($("#no").text() === "编号"){
+                _sweet_alert_with_buttons(
+                '确认结算',
+                '是否确认结算？',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    $("#active_work_id").val(work_id);
+                    $("#active_dac_id").val(dac_id);
+                    let formData = $("#active_work_form").serialize();
+                    if (isConfirm === false){
+                        _post('/proposal/settlement', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                _get('/balance', '', function (resp) {
+                                    let res = $.parseJSON(resp);
+                                    tip("已扣除" + excitation +"M Token质押金, 余额为" + res + "M Token")
+                                });
+                                _sweet_alert_notify('success', '结算成功', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify('error', res.message[0], '');
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                '',
+                'After confirmation, the incentives will be transferred to your collaborator',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    $("#active_work_id").val(work_id);
+                    $("#active_dac_id").val(dac_id);
+                    let formData = $("#active_work_form").serialize();
+                    if (isConfirm === false){
+                        _post('/proposal/settlement', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                _get('/balance', '', function (resp) {
+                                    let res = $.parseJSON(resp);
+                                    tip("已扣除" + excitation +"M Token质押金, 余额为" + res + "M Token")
+                                });
+                                _sweet_alert_notify('success', 'Success', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify('error', res.message[0], '');
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+        }
+        function _claim_promise(formData) {
+            _post('/proposal/publisher_promise', formData, function (resp) {
+                let res = $.parseJSON(resp);
+                if (res.code === 'ok'){
+                    _get('/balance', '', function (resp) {
+                        let res = $.parseJSON(resp);
+                        tip("已质押" + "10M Token, 余额为" + res + "M Token")
+                    });
+                    if($("#no").text() === "编号"){
+                    _sweet_alert_notify('success', '质押成功', '');}else{
+                        _sweet_alert_notify('success', 'Success', '');
+                    }
+
+                    _fresh_current_page(1000);
+                }
+                else{
+                    _sweet_alert_notify('error', res.message[0], '');
+                }
+            })
+        }
+    </script>
+{% endblock %}

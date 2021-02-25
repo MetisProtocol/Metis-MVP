@@ -1,0 +1,618 @@
+{% extends "DAC/_layout.html" %}
+{% from "macro.html" import display_work_status %}
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for("dac.index", dac_id=dac_id) }}">
+
+
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div id="content-page" class="content-page">
+        <div class="container-fluid">
+            <div class="row">
+
+                <!-- content -->
+                <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-lg-9 profile-left">
+                        <div class="tab-content" style="margin-bottom: 20px;padding: 0">
+                            <div class="tab-pane active show" id="working" role="tabpanel">
+                                <div class="card-box">
+                                    <div class="iq-card-header d-flex justify-content-between">
+                                        <div class="iq-header-title">
+                                            <h2 class="card-title">{{ knowledge.knowledge_detail_name }}</h2>
+                                        </div>
+                                    </div>
+                                    <div class="iq-card-body">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    <div class="tab-content" style="margin-bottom: 20px;padding: 0">
+                            <div class="tab-pane active show" id="working" role="tabpanel">
+                                <div class="card-box">
+                                    <div class="iq-card-header d-flex justify-content-between">
+                                        <div class="iq-header-title">
+                                            <h2 class="card-title i18n" name="content"></h2>
+
+                                        </div>
+                                        {% if current_user.uid == knowledge.knowledge_detail_writer and knowledge.review_status == 0 %}
+                                        <button class="btn btn-info i18n" name="edit" onclick="a_for_transfer('/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}/info-edit?knowledge_type=writer')" type="button" style="height: 35px">
+                                              编辑
+                                           </button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="iq-card-body">
+                                        {% if knowledge_info_writer %}
+                                        <ul class="suggestions-lists m-0 p-0" style="border-bottom: 1px solid #f2edff;margin-top: 15px!important">
+                                        <li class="d-flex mb-4 align-items-center">
+                                            <div class="user-img img-fluid">
+                                                <img src="{{ url_for('static', filename='uploads/' + members_logo[knowledge_info_writer.knowledge_info_belongs]) }}" alt="story-img" class="rounded-circle avatar-40" style="height: 70px;">
+                                            </div>
+                                            <div class="media-support-info ml-3" style="margin-right: 20px">
+                                                <h6>{{ knowledge_info_writer.knowledge_info_belongs }}</h6>
+                                            </div>
+{#                                            <div>#}
+{#                                                <span><span class="i18n" name="like"></span>：{{ knowledge_info_writer.knowledge_info_fabulous }}</span>#}
+{#                                            </div>#}
+{#                                            <div style="margin-left: 30px">#}
+{#                                                <span><span class="i18n" name="_publish"></span>：{{ knowledge_info_writer.ctime.strftime("%Y-%m-%d %H:%M:%S") }}</span>#}
+{#                                            </div>#}
+                                        </li>
+                                        <li class="d-flex mb-4 align-items-center">
+                                            <div class="media-support-info ml-3">
+                                                <h6>{{ knowledge_info_writer.knowledge_info_memo | safe }}</h6>
+                                            </div>
+                                        </li>
+                                        <li class="d-flex mb-4 align-items-center">
+                                            <div class="media-support-info ml-3" style="width: 100%">
+                                                <span style="margin-right: 30px"><span class="i18n" name="_publish"></span>：{{ knowledge_info_writer.ctime.strftime("%Y-%m-%d %H:%M:%S") }}</span>
+                                                <span><span class="i18n" name="like"></span>：{{ knowledge_info_writer.knowledge_info_fabulous }}</span>
+                                                {% if current_user.uid != knowledge_info_writer.knowledge_info_belongs %}
+                                                <button class="btn btn-info i18n" name="reword" onclick="_for_transfer('{{ dac_id }}', '{{ get_addr(knowledge_info_writer.knowledge_info_belongs).eth_addr }}')" type="button" style="display: block; float: right; margin-left: 20px">
+
+                                                </button>
+                                                <button class="btn btn-info i18n" name="like" onclick="_fabulous('{{ knowledge_info_writer.knowledge_info_id }}', $(this))" type="button" style="display: block; float: right">
+
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                        {% if knowledge.review_status == 1 %}
+                                            <li class="d-flex mb-4 align-items-center">
+                                                <span class="badge badge-warning i18n" name="to_be_reviewed"></span>
+                                            </li>
+                                            {% elif knowledge.review_status == 2 %}
+                                            <li class="d-flex mb-4 align-items-center">
+                                                <span class="badge badge-success i18n" name="approved"></span>
+                                            </li>
+                                            {% endif %}
+                                        {% if current_user.uid == knowledge.knowledge_detail_writer and knowledge.review_status == 0 %}
+                                            <li class="d-flex mb-4 align-items-center">
+                                                <button class="btn btn-info col-sm-2 i18n" name="submit" onclick="_submit_writer()" type="button">
+                                                      提交
+                                                   </button>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" style="padding: 0">
+                            <div class="tab-pane active show" id="working" role="tabpanel">
+                                <div class="card-box">
+                                    <div class="iq-card-header d-flex justify-content-between">
+                                        <div class="iq-header-title">
+                                            <h2 class="card-title i18n" name="discuss" id="discuss"></h2>
+
+                                        </div>
+                                        {% if current_user.uid in json.loads(knowledge.knowledge_detail_joiner)  and knowledge.review_status == 0 %}
+                                        <button class="btn btn-info col-sm-2 i18n" name="edit" onclick="_transfer('/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}/info-edit?knowledge_type=joiner')" type="button">
+
+                                           </button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="iq-card-body">
+                                        {% for knowledge_info in knowledge_info_list %}
+                                        <ul class="suggestions-lists m-0 p-0" style="border-bottom: 1px solid #f2edff;margin-top: 15px!important">
+                                        <li class="d-flex mb-4 align-items-center">
+                                            <div class="user-img img-fluid">
+                                                <img src="{{ url_for('static', filename='uploads/' + members_logo[knowledge_info.knowledge_info_belongs]) }}" alt="story-img" class="rounded-circle avatar-40" style="height: 70px;">
+                                            </div>
+                                            <div class="media-support-info ml-3">
+                                                <h6>{{ knowledge_info.knowledge_info_belongs }}</h6>
+                                            </div>
+                                        </li>
+                                        <li class="d-flex mb-4 align-items-center">
+                                            <div class="media-support-info ml-3">
+                                                <h6>{{ knowledge_info.knowledge_info_memo | safe }}</h6>
+                                            </div>
+                                        </li>
+                                        <li class="d-flex mb-4 align-items-center">
+                                            <div class="media-support-info ml-3" style="width: 100%">
+                                                <span style="margin-right: 30px"><span class="i18n" name="_publish"></span>：{{ knowledge_info.ctime.strftime("%Y-%m-%d %H:%M:%S") }}</span>
+                                                <span class="i18n" name="like"></span><span>：{{ knowledge_info.knowledge_info_fabulous }}</span>
+                                                {% if current_user.uid != knowledge_info.knowledge_info_belongs %}
+                                                <button class="btn btn-info i18n" name="reword" onclick="_for_transfer('{{ dac_id }}', '{{ get_addr(knowledge_info.knowledge_info_belongs).eth_addr }}')" type="button" style="display: block; float: right; margin-left: 20px">
+
+                                                </button>
+                                                <button class="btn btn-info i18n" name="like" onclick="_fabulous('{{ knowledge_info.knowledge_info_id }}', $(this))" type="button" style="display: block; float: right">
+
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 profile-right">
+{#                        <div class="card-box">#}
+{#                            <div class="iq-card-header d-flex justify-content-between">#}
+{#                                <div class="iq-header-title">#}
+{#                                    <h4 class="iq-header-title">目的</h4>#}
+{#                                </div>#}
+{#                                {% if current_user.uid == knowledge.knowledge_detail_belongs %}#}
+{#                                        <button class="btn btn-primary float-right" onclick="_edit('知识条目目的', 'knowledge_describe')" type="button" style="background: #5bc0de">#}
+{#                                              编辑#}
+{#                                           </button>#}
+{#                                        {% endif %}#}
+{#                            </div>#}
+{#                            <div class="iq-card-body">#}
+{#                                <ul class="suggestions-lists m-0 p-0">#}
+{#                                    <li class="d-flex mb-4 align-items-center">#}
+{#                                       <span>{{ knowledge.knowledge_describe }}</span>#}
+{#                                    </li>#}
+{#                                </ul>#}
+{#                            </div>#}
+{#                        </div>#}
+                        <div class="card-box">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="iq-header-title i18n" name="initiator"></h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <ul class="suggestions-lists m-0 p-0">
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="user-img img-fluid">
+                                            <img src="{{ url_for('static', filename='uploads/' + members_logo[knowledge.knowledge_detail_belongs]) }}" alt="story-img" class="rounded-circle avatar-40"  style="height: 70px;">
+                                        </div>
+                                        <div class="media-support-info ml-3">
+                                            <h6>{{ knowledge.knowledge_detail_belongs }}</h6>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-box">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="iq-header-title i18n" name="consolidator"></h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <ul class="suggestions-lists m-0 p-0">
+                                    {% if knowledge.knowledge_detail_writer %}
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="user-img img-fluid">
+                                            <img src="{{ url_for('static', filename='uploads/' + members_logo[knowledge.knowledge_detail_writer]) }}" alt="story-img" class="rounded-circle avatar-40"  style="height: 70px;">
+                                        </div>
+                                        <div class="media-support-info ml-3">
+                                            <h6>{{ knowledge.knowledge_detail_writer }}</h6>
+                                        </div>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-box">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="iq-header-title i18n" name="participant"></h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <ul class="suggestions-lists m-0 p-0">
+                                    {% for member in json.loads(knowledge.knowledge_detail_joiner) %}
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="user-img img-fluid">
+                                            <img src="{{ url_for('static', filename='uploads/' + members_logo[member]) }}" alt="story-img" class="rounded-circle avatar-40"  style="height: 70px;">
+                                        </div>
+                                        <div class="media-support-info ml-3">
+                                            <h6>{{ member }}</h6>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-box">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="iq-header-title i18n" name="staked_rules"></h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <ul class="suggestions-lists m-0 p-0">
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="media-support-info ml-3">
+                                            <h6><span class="i18n" name="initiator"></span>：100 M Token</h6>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="media-support-info ml-3">
+                                            <h6><span class="i18n" name="consolidator"></span>：{{ json.loads(knowledge.knowledge_detail_writer_balance).pledge }} M Token</h6>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="media-support-info ml-3">
+                                            <h6><span class="i18n" name="participant"></span>：{{ json.loads(knowledge.knowledge_detail_joiner_balance).pledge }} M Token</h6>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-box">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="iq-header-title i18n" name="incentives_rules"></h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <ul class="suggestions-lists m-0 p-0">
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="media-support-info ml-3">
+                                            <h6><span class="i18n" name="initiator"></span>：100 M Token</h6>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="media-support-info ml-3">
+                                            <h6><span class="i18n" name="consolidator"></span>：{{ json.loads(knowledge.knowledge_detail_writer_balance).excitation }} M Token</h6>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="media-support-info ml-3">
+                                            <h6><span class="i18n" name="participant"></span>：{{ json.loads(knowledge.knowledge_detail_joiner_balance).excitation }} M Token</h6>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            </div>
+        </div>
+        <form id="knowledge_info_form" style="display: none">
+            {{ form.csrf_token }}
+            <input type="text" id="knowledge_detail_name" name="knowledge_detail_name" value="{{ knowledge.knowledge_detail_name }}">
+            <input type="text" id="knowledge_describe" name="knowledge_describe" value="{{ knowledge.knowledge_describe }}">
+            <input type="text" id="knowledge_detail_writer_pledge" name="knowledge_detail_writer_pledge" value="{{ json.loads(knowledge.knowledge_detail_writer_balance).pledge }}">
+            <input type="text" id="knowledge_detail_joiner_pledge" name="knowledge_detail_joiner_pledge" value="{{ json.loads(knowledge.knowledge_detail_joiner_balance).pledge }}">
+            <input type="text" id="knowledge_detail_writer_excitation" name="knowledge_detail_writer_excitation" value="{{ json.loads(knowledge.knowledge_detail_writer_balance).excitation }}">
+            <input type="text" id="knowledge_detail_joiner_excitation" name="knowledge_detail_joiner_excitation" value="{{ json.loads(knowledge.knowledge_detail_joiner_balance).excitation }}">
+        </form>
+    </div>
+{% endblock %}
+
+<!-- script -->
+{% block script %}
+    {{ super() }}
+    <script>
+    $(function(){
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+         })
+        function a_for_transfer(val) {
+            $(".iframe").remove();
+            let pos = '<div style="display: none" class="iframe"><iframe src="' + val + '" frameborder="0" id="iframe" width="' + $(window).width() * 0.9 + 'px' + '" height="500px"></iframe></div>';
+            $(pos).appendTo($(".col-sm-12"));
+            var M = {};
+            if(M.dialog6){
+                return M.dialog6.show();
+            }
+            if ($("#discuss").text() === "记录"){
+                M.dialog6 = jqueryAlert({
+                'style'   : 'pc',
+                'title'   : '参与记录',
+                'content' :  $("#iframe"),
+                'modal'   : true,
+                'contentTextAlign' : 'left',
+                'width'   : 'auto',
+                'animateType' : 'linear',
+                'buttons' :{
+                    '关闭' : function(){
+                        M.dialog6.close();
+                    },
+                }
+            })
+            }else{
+                M.dialog6 = jqueryAlert({
+                'style'   : 'pc',
+                'title'   : 'Edit the content',
+                'content' :  $("#iframe"),
+                'modal'   : true,
+                'contentTextAlign' : 'left',
+                'width'   : 'auto',
+                'animateType' : 'linear',
+                'buttons' :{
+                    'Close' : function(){
+                        M.dialog6.close();
+                    },
+                }
+            })
+            }
+        }
+        function _transfer(val) {
+            $(".iframe").remove();
+            let pos = '<div style="display: none" class="iframe"><iframe src="' + val + '" frameborder="0" id="iframe" width="' + $(window).width() * 0.9 + 'px' + '" height="500px"></iframe></div>';
+            $(pos).appendTo($(".col-sm-12"));
+            var M = {};
+            if(M.dialog6){
+                return M.dialog6.show();
+            }
+            if ($("#discuss").text() === "讨论"){
+                M.dialog6 = jqueryAlert({
+                'style'   : 'pc',
+                'title'   : '参与讨论',
+                'content' :  $("#iframe"),
+                'modal'   : true,
+                'contentTextAlign' : 'left',
+                'width'   : 'auto',
+                'animateType' : 'linear',
+                'buttons' :{
+                    '关闭' : function(){
+                        M.dialog6.close();
+                    },
+                }
+            })
+            }else{
+                M.dialog6 = jqueryAlert({
+                'style'   : 'pc',
+                'title'   : 'Discuss',
+                'content' :  $("#iframe"),
+                'modal'   : true,
+                'contentTextAlign' : 'left',
+                'width'   : 'auto',
+                'animateType' : 'linear',
+                'buttons' :{
+                    'Close' : function(){
+                        M.dialog6.close();
+                    },
+                }
+            })
+            }
+
+        }
+
+        function _edit(data, val) {
+            if ($("#discuss").text() === "讨论"){
+                _sweet_alert_with_buttons(
+                '修改' + data + '的信息',
+                '<input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" value="" id="edit" placeholder="'+ data +'">',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        $("#"+val).val($("#edit").val());
+                        let formData = $("#knowledge_info_form").serialize();
+                        _post('/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}' + '/info', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', '编辑成功', '');
+                                _fresh_current_page(1000);
+                            }
+                            else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                    }else {
+                        console.log("cancel");
+                    }
+                }
+            )
+            }else{
+                _sweet_alert_with_buttons(
+                'Edit ' + data,
+                '<input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" value="" id="edit" placeholder="'+ data +'">',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        $("#"+val).val($("#edit").val());
+                        let formData = $("#knowledge_info_form").serialize();
+                        _post('/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}' + '/info', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', 'Success', '');
+                                _fresh_current_page(1000);
+                            }
+                            else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                    }else {
+                        console.log("cancel");
+                    }
+                }
+            )
+            }
+        }
+
+        function _fabulous(knowledge_id, val) {
+            _get('/knowledge/'+ knowledge_id + '/fabulous', '', function (resp) {
+                let res = $.parseJSON(resp);
+                if (res.code === 'ok'){
+                    if ($("#discuss").text() === "讨论"){
+                        val.text('已赞');
+                    }else{
+                        val.text('liked');
+                    }
+
+                    val.attr("disabled","disabled")
+                }
+            })
+        }
+
+        function _for_transfer(dac_id, addr) {
+            if ($("#discuss").text() === "讨论"){
+                _sweet_alert_with_buttons(
+                '转账',
+                '<form id="transfer_form">\n' +
+                '{{ transfer_form.csrf_token }}\n' +
+                '<input type="password" class="form-control mb-0" name="private_key" placeholder="您的私钥">\n' +
+                '<input type="text" value="'+ addr +'" class="form-control mb-0" id="eth" name="receiver_eth" placeholder="收款人（公钥）" style="display:none">\n' +
+                '<input type="text" class="form-control mb-0" name="amount" id="balance" placeholder="转账金额（M）">\n' +
+                '</form>',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    let balance = $("#balance").val();
+                    let eth = $("#eth").val();
+                    let formData = $("#transfer_form").serialize();
+                    if (isConfirm === false){
+                        _post("/member/" + dac_id +"/info", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                tip(balance + "M Token, 已从您的账户转到" + eth );
+                                _sweet_alert_notify('success', '打赏成功', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify(res[1]);
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                'Transfer',
+                '<form id="transfer_form">\n' +
+                '{{ transfer_form.csrf_token }}\n' +
+                '<input type="password" class="form-control mb-0" name="private_key" placeholder="Your Private Key">\n' +
+                '<input type="text" value="'+ addr +'" class="form-control mb-0" id="eth" name="receiver_eth" placeholder="收款人（公钥）" style="display:none">\n' +
+                '<input type="text" class="form-control mb-0" name="amount" id="balance" placeholder="Amount">\n' +
+                '</form>',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    let balance = $("#balance").val();
+                    let eth = $("#eth").val();
+                    let formData = $("#transfer_form").serialize();
+                    if (isConfirm === false){
+                        _post("/member/" + dac_id +"/info", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                tip(balance + "M Token, 已从您的账户转到" + eth );
+                                _sweet_alert_notify('success', 'Success', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify(res[1]);
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+        }
+
+        function _submit_writer() {
+            if ($("#discuss").text() === "讨论"){
+                _sweet_alert_with_buttons(
+                '是否确认提交记录内容',
+                '',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        _get('/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}/submit' , '', function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', '提交成功，请等待发起人审核', '');
+                                _fresh_current_page(1000);
+                            } else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                'Submit?',
+                '',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        _get('/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}/submit' , '', function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', 'Please wait for review', '');
+                                _fresh_current_page(1000);
+                            } else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }
+        }
+    </script>
+
+{% endblock %}

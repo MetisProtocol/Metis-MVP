@@ -1,0 +1,108 @@
+{% extends "_layout_signin.html" %}
+
+{% block content %}
+{#    <div class="sign-in-from bg-white">#}
+{#        <div id="notify"></div>#}
+{#        <h2 class="mb-0">Sign In</h2>#}
+{#        <form class="mt-4" id="_registration">#}
+{#            {{ form.csrf_token }}#}
+{#            <div class="form-group">#}
+{#                <label for="email">Email address</label>#}
+{#                <input type="email" class="form-control mb-0" id="email" placeholder="Enter email" name="email">#}
+{#            </div>#}
+{#            <div class="form-group">#}
+{#                <label for="password">Password</label>#}
+{#                <input type="password" class="form-control mb-0" id="password" placeholder="Password" name="password">#}
+{#            </div>#}
+{#            <div class="d-inline-block w-100" style="float: left">#}
+{#                <button type="button" class="btn btn-primary float-right" onclick="window.location.href='/account/register'" style="float: left">Register</button>#}
+{#            </div>#}
+{#            <div class="d-inline-block w-100" style="float: right">#}
+{#                <button type="button" class="btn btn-primary float-right" onclick="_submit()">Sign in</button>#}
+{#            </div>#}
+{#        </form>#}
+{#    </div>#}
+
+        <div class="home-btn d-none d-sm-block">
+            <a href="index.html"><i class="fas fa-home h2 text-white"></i></a>
+        </div>
+
+        <div class="account-pages w-100 mt-5 mb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6 col-xl-5">
+                        <div class="card">
+
+                            <div class="card-body p-4">
+                                <span class="i18n" name="email" style="display: none" id="_test"></span>
+                                <div class="text-center mb-4">
+                                    <a href="index.html">
+                                        <span><img src="{{ url_for('static', filename='images/metis_logo.png') }}" alt="" height="75"></span>
+                                    </a>
+                                </div>
+
+                                <form class="pt-2" id="_registration">
+                                    {{ form.csrf_token }}
+
+                                    <div class="form-group mb-3">
+                                        <label for="emailaddress">Email address</label>
+                                        <input class="form-control" type="email" required="" placeholder="Enter your email" name="email">
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <a href="auth-recoverpassword.html" class="text-muted float-right"><small>Forgot your password?</small></a>
+                                        <label for="password">Password</label>
+                                        <input class="form-control" type="password" required="" placeholder="Enter your password" name="password">
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox mb-3">
+                                        <input type="checkbox" class="custom-control-input" id="checkbox-signin" checked>
+                                    </div>
+
+                                    <div class="form-group mb-0 text-center">
+                                        <button class="btn btn-info btn-block" type="button" onclick="_submit()"> Log In </button>
+                                    </div>
+
+                                </form>
+
+                                <div class="row mt-3">
+                                    <div class="col-12 text-center">
+                                        <p class="text-muted mb-0">Don't have an account? <a href="/account/register" class="text-dark ml-1"><b>Sign Up</b></a></p>
+                                    </div> <!-- end col -->
+                                </div>
+                                <!-- end row -->
+
+                            </div> <!-- end card-body -->
+                        </div>
+                        <!-- end card -->
+
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- end page -->
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        function _submit() {
+            _post("/account/login", $("#_registration").serialize(), function (resp) {
+            let res = $.parseJSON(resp);
+            if (res.code === 'ok') {
+                tip("Login successful")
+                fresh_redirect('/', 500);
+            }
+            else{
+                if($("#_test").val() === "邮箱" && res.message === '邮箱已被注册'){
+                    tip("The email address has been signed up. Please change another one.")
+                }else{
+                    tip(res.message);
+                }
+            }
+        })
+        }
+    </script>
+{% endblock %}

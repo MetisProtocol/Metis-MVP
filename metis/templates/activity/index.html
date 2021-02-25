@@ -1,0 +1,45 @@
+{% extends "DAC/_layout.html" %}
+
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="/">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" style="line-height: 45px">Activity
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+<!-- top bar username -->
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height">Hello Nik 1111</h5>
+        <span class="text-white font-size-12">Available 22222</span>
+    </div>
+{% endblock %}
+
+<!-- content -->
+
+{% block content %}
+    <div class="content-page" id="content-page">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="text-center">
+                    <h4 class="card-title text-center">Activity</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        _switch_menu("_activity");
+    </script>
+{% endblock %}

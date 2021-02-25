@@ -1,0 +1,50 @@
+
+<!doctype html>
+<html lang="en">
+   <head>
+      <!-- Required meta tags -->
+      <meta charset="UTF-8">
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="author" content="Metis Team">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
+      <meta charset="utf-8">
+
+      <title>Metis Protocol</title>
+      <!-- Favicon -->
+      <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+      <!-- Typography CSS -->
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.min.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/weui.min.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/app.min.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/uploadifive.css') }}">
+       <link rel="stylesheet" href="{{ url_for('static', filename='components/sweetalert/css/sweetalert2.css') }}">
+      <!-- Style CSS -->
+   </head>
+   <body class="authentication-bg authentication-bg-pattern d-flex align-items-center">
+        <!-- Sign in Start -->
+
+        {% block content %}
+
+        {% endblock %}
+        <!-- Sign in END -->
+      <!-- Optional JavaScript -->
+      <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+      <script src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/weui.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='components/sweetalert/js/sweetalert2.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/jquery.uploadifive.min.js') }}"></script>
+{#      <script src="{{ url_for('static', filename='js/app.min.js') }}"></script>#}
+      <!-- Appear JavaScript -->
+   </body>
+    {% block script %}
+
+    {% endblock %}
+</html>

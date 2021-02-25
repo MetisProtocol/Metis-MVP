@@ -1,0 +1,82 @@
+{% extends "DAC/_layout.html" %}
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height">{{ user_info.username }}</h5>
+        <span class="text-white font-size-12">{{ user_info.email }}</span>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="content-page" id="content-page">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card iq-mb-3" style="margin-top: 3%">
+                        <div class="row no-gutters flex-row-reverse">
+                           <div class="col-md-4">
+                              <img src="{{ url_for('static', filename='images/page-img/09.jpg') }}" class="card-img" alt="#">
+                           </div>
+                           <div class="col-md-8">
+                              <div class="card-body text-center">
+                                 <h3 class="card-title i18n" style="margin: 8%" name="p_a_t_d" id="_test2"></h3>
+                                 <a href="#" onclick="_activity()" style="color: #00c4ff" class="i18n" name="g_to_a"></a>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function _activity() {
+            let active_uri = "/dac/{{ dac_id }}/active";
+            let next_uri = "/dac/{{ dac_id }}"
+            _sweet_alert_with_buttons(
+                "Activate DAC",
+                '<form class="mt-4" id="_active">\n' +
+                '            {{ form.csrf_token }}\n' +
+                '                <input type="text" class="form-control mb-0" id="dac_id" placeholder="Enter DAC Name" name="dac_id" value="{{ dac_id }}" readonly="readonly" style="display: none"> \n' +
+                '                <input type="text" class="form-control mb-0" id="excitation" placeholder="Stake M Token" name="excitation" value="">\n' +
+                '        </form>',
+                "warning",
+                "Activate",
+                "Cancel",
+                function (isConfirm) {
+                    if (isConfirm === true) {
+                        // cancel post process
+                    }
+                    else if (isConfirm === false) {
+                        if(!$("#excitation").val()){
+                            if($("#_test2").text() === '请您激活此DAC'){
+                                tip("请填写质押金额")
+                            }else{
+                                tip("Please fill in stake amount")
+                            }
+                            return
+                        }else{
+                            let form_data = $("#_active").serialize();
+                            // confirm post process
+                            _post(active_uri, form_data, function (resp) {
+                               let feedback = $.parseJSON(resp);
+                               if (feedback.code === 'ok'){
+                                   _sweet_alert_notify("success", "Successful", "DAC has been activated");
+                                   fresh_redirect(next_uri, 1000);
+                               }
+                               else{
+                                   _sweet_alert_notify("error", "Oops...", "Something was warn")
+                               }
+                            });
+                        }
+
+                    }
+                }
+            );
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "_layout_signin.html" %}
+
+{% block content %}
+    <div class="account-pages w-100 mt-5 mb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6 col-xl-5">
+                        <div class="card">
+
+                            <div class="card-body p-4">
+
+                                <div class="text-center mb-4">
+                                    <a href="index.html">
+                                        <span><img src="{{ url_for('static', filename='images/metis_logo.png') }}" alt="" height="75"></span>
+                                    </a>
+                                </div>
+
+                                <form class="pt-2" id="_registration">
+                                    {{ form.csrf_token }}
+                                    <div class="form-group">
+                                        <label for="dac_name">DAC Name</label>
+                                        <select class="form-control" id="dac_name" onchange="_onChange()">
+                                            <option></option>
+                                            {% for dac in dac_set %}
+                                                <option value="{{ dac.dac_id }},{{ dac.dac_desc }}">{{ dac.dac_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="desc">DAC Describe</label>
+                                        <input type="text" class="form-control" id="desc" readonly="readonly">
+                                    </div>
+
+                                    <div class="form-group" style="display: none">
+                                        <label for="dac_id">DAC ID</label>
+                                        <input type="text" class="form-control mb-0" id="dac_id" readonly="readonly" name="dac_id">
+                                    </div>
+
+                                    <div class="form-group mb-0 text-center">
+                                        <button class="btn btn-info btn-block i18n" name="join" type="button" onclick="_submit()" id="join"> Join </button>
+                                    </div>
+
+
+
+
+                                </form>
+
+{#                                <div class="row mt-3">#}
+{#                                    <div class="col-12 text-center">#}
+{#                                        <p class="text-muted mb-0">Don't have an account? <a href="/account/register" class="text-dark ml-1"><b>Sign Up</b></a></p>#}
+{#                                    </div> <!-- end col -->#}
+{#                                </div>#}
+                                <!-- end row -->
+
+                            </div> <!-- end card-body -->
+                        </div>
+                        <!-- end card -->
+
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function _submit() {
+            if($("#join").text() === "我要加入"){
+                _sweet_alert_with_buttons(
+                '是否确认加入此DAC 加入需要质押10M Token',
+                '',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        _post('/register', $("#_registration").serialize(), function (resp) {
+                           let res = $.parseJSON(resp);
+                           if (res.code === 'ok') {
+                               _notify("notify", "成功进入DAC", "success");
+                               fresh_redirect('/dac/' + res.content.dac_id, 800);
+                           }
+                           else{
+                               _notify("notify", res.message[0], "error");
+                               window.setTimeout(
+                                   () => {_remove_notify("notify")},
+                                   1000
+                               )
+                           }
+                        })
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                '',
+                'Please stake 10 M Token to join the DAC',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        _post('/register', $("#_registration").serialize(), function (resp) {
+                           let res = $.parseJSON(resp);
+                           if (res.code === 'ok') {
+                               _notify("notify", "Success", "");
+                               fresh_redirect('/dac/' + res.content.dac_id, 800);
+                           }
+                           else{
+                               _notify("notify", res.message[0], "error");
+                               window.setTimeout(
+                                   () => {_remove_notify("notify")},
+                                   1000
+                               )
+                           }
+                        })
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }
+        }
+
+        function _onChange(){
+            let sel = document.getElementById("dac_name");
+            let selIndex = sel.selectedIndex;
+            let content = sel.options[selIndex].value;
+            let new_content = content.split(',');
+            $("#desc").val(new_content[1]);
+            $("#dac_id").val(new_content[0]);
+        }
+
+    </script>
+{% endblock %}

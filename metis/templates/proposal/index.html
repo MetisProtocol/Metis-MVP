@@ -1,0 +1,419 @@
+{% extends "DAC/_layout.html" %}
+{% from "macro.html" import display_work_status %}
+
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for("dac.index", dac_id=dac_id) }}">首页</a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" style="line-height: 45px">工作管理</li>
+                <li class="breadcrumb-item active" aria-current="page" style="line-height: 45px">工作列表</li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+<!-- top bar username -->
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height">{{ user_info.username }}</h5>
+        <span class="text-white font-size-12">{{ user_info.email }}</span>
+    </div>
+{% endblock %}
+
+<!-- content -->
+
+{% block content %}
+    <div class="content-page">
+
+        <div class="content">
+
+                    <!-- Start Content-->
+                    <div class="container-fluid">
+
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box">
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);">DAC</a></li>
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);" class="i18n" name="tasks_list"></a></li>
+                                            <li class="breadcrumb-item active i18n" name="tasks_list"></li>
+                                        </ol>
+                                    </div>
+                                    <h4 class="page-title i18n" name="tasks_list"></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+
+                        <div class="row">
+
+                            <!-- Right Sidebar -->
+                            <div class="col-lg-12">
+                                <div class="card-box">
+                                    <!-- Left sidebar -->
+                                    <div class="inbox-leftbar">
+
+
+                                        <div class="mail-list mt-4">
+                                        <a href="#" class="list-group-item border-0" onclick="_active_status_bar('all_works', '{{ dac_id }}')">
+                                                         <span class="i18n" name="all_work"></span>
+                                        </a>
+                                        <a href="#" class="list-group-item border-0" onclick="_active_status_bar('undo', '{{ dac_id }}')">
+                                                        <i class="ri-checkbox-blank-circle-fill text-info"></i>
+                                                         <span class="i18n" name="pending"></span>
+                                        {% if state_statistics.undo != 0 %}
+                                                <span class="badge badge-danger ml-2 float-right">{{ state_statistics.undo }}</span>
+                                        {% endif %}
+                                        </a>
+                                        <a href="#" class="list-group-item border-0" onclick="_active_status_bar('exec', '{{ dac_id }}')">
+                                                        <i class="ri-checkbox-blank-circle-fill text-danger"></i>
+                                                         <span class="i18n" name="in_process"></span>
+                                        {% if state_statistics.exec != 0 %}
+                                            <span class="badge badge-danger ml-2 float-right">{{ state_statistics.exec }}</span>
+                                        {% endif %}
+                                        </a>
+                                        <a href="#" class="list-group-item border-0"
+                                                onclick="_active_status_bar('review', '{{ dac_id }}')">
+                                                        <i class="ri-checkbox-blank-circle-fill text-warning"></i>
+                                                        <span class="i18n" name="to_be_reviewed"></span>
+                                        {% if state_statistics.review != 0 %}
+                                            <span class="badge badge-danger ml-2 float-right">{{ state_statistics.review }}</span>
+                                        {% endif %}
+                                        </a>
+                                        <a href="#" class="list-group-item border-0" onclick="_active_status_bar('finish', '{{ dac_id }}')">
+                                                        <i class="ri-checkbox-blank-circle-fill text-success"></i>
+                                                        <span class="i18n" name="finished"></span>
+                                        {% if state_statistics.finish != 0 %}
+                                            <span class="badge badge-danger ml-2 float-right">{{ state_statistics.finish }}</span>
+                                        {% endif %}
+                                        </a>
+                                    </div>
+
+                                    </div>
+                                    <!-- End Left sidebar -->
+
+                                    <div class="inbox-rightbar">
+
+                                        <!-- end .mt-4 -->
+
+                                        <div class="iq-card-body" id="working">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th class="i18n" name="no." id="no"></th>
+                                            <th class="i18n" name="name"></th>
+                                            <th class="i18n" name="create_date"></th>
+                                            <th class="i18n" name="status"></th>
+                                            <th class="i18n" name="team"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for work in all_work_list %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td onclick="show_table_hidden($(this))" style="cursor:pointer; text-align: center">{{ work.work_name }}</td>
+                                            <td>{{ work.work_ctime.strftime('%Y-%m-%d') }}</td>
+                                            <td>{{ display_work_status(work.work_status) }}</td>
+                                            <td>{{ work.participants if work.participants else "" }}</td>
+                                        </tr>
+
+                                        <tr style="display: none">
+                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">
+                                                <span class="i18n" name="task_rules"></span><span>：<a
+                                                            href="/proposal/{{ dac_id }}/{{ work.work_id }}/info"  class="i18n" name="check"></a></span>
+                                            </td>
+                                        </tr>
+                                        <tr style="display: none">
+                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">
+                                                <span class="i18n" name="date_requirement"></span><span>{{ work.work_ctime.strftime('%Y-%m-%d') }}</span>
+                                            </td>
+                                        </tr>
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span class="i18n" name="staked">质押</span><span>token：</span><span>{{ work.work_excitation }}M Token</span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+                                        <tr style="display: none">
+                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">
+                                                <span class="i18n" name="incentives"></span><span>{{ work.work_excitation }}M Token</span>
+                                            </td>
+                                        </tr>
+                                        <tr style="display: none">
+                                            <td colspan="2" style="text-align: left; padding-left: 20px;">
+                                                {% if not is_admin and work.work_status == 0 %}
+                                                <button type="button" class="btn btn-primary i18n" name="want_claim" onclick="claim_work_btn('{{ work.work_id }}', '{{ work.work_publisher }}')">申领</button>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                                    <form class="mt-4" style="display: none" id="claimForm">
+                                        {{ claim_form.csrf_token }}
+                                        <div class="form-group">
+                                            <label for="claimForm_workID">work_id</label>
+                                            <input class="form-control" id="claimForm_workID" name="work_id" value="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="claimForm_publisher">publisher</label>
+                                            <input class="form-control" id="claimForm_publisher" name="publisher" value="">
+                                        </div>
+                                    </form>
+                                        <!-- end row-->
+                                    </div>
+                                    <!-- end inbox-rightbar-->
+
+                                    <div class="clearfix"></div>
+                                </div> <!-- end card-box -->
+
+                            </div> <!-- end Col -->
+
+                        </div><!-- End row -->
+
+                    </div> <!-- container-fluid -->
+
+                </div> <!-- content -->
+    </div>
+{% endblock %}
+
+<!-- script -->
+{% block script %}
+    <script>
+    $(function(){
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+         })
+        _switch_sub_menu("_proposal_list", "_sub_proposal_list_lst");
+
+        function _active_status_bar(id, dac_id) {
+            let lis = $("[id='todo-task1']").find('li');
+            let status = {
+                undo: "?status=0",
+                exec: "?status=1",
+                review: "?status=2",
+                finish: "?status=6"
+            };
+
+            // remove all li active class
+            $.each(lis, function (index, item) {
+                $(item).removeClass("active");
+            });
+
+            // add active class for spec menu li 'id'
+            $("[id='" + id + "']").addClass("active");
+            if (id === "all_works") {
+                window.location.href = "/proposal/" + dac_id;
+            } else {
+                window.location.href = "/proposal/" + dac_id + status[id];
+            }
+        }
+
+        function _active() {
+            let status = {
+                "0": "undo",
+                "1": "exec",
+                "2": "review",
+                "3": "finish"
+            };
+            let pattern = /\?status=(.*)?/;
+            let result = pattern.exec(window.location.href);
+            if (result != null) {
+                $("#" + status[result[1]]).addClass("active");
+            } else {
+                $("#all_works").addClass("active");
+            }
+        }
+
+        _active();
+
+        function show_table_hidden(obj) {
+            let data = obj.parent().next();
+            if (data.css("display") === "none") {
+                data.show();
+                data.next().show();
+                data.next().next().show();
+                data.next().next().next().show();
+                data.next().next().next().next().show();
+            } else {
+                data.hide();
+                data.next().hide();
+                data.next().next().hide();
+                data.next().next().next().hide();
+                data.next().next().next().next().hide();
+            }
+        }
+
+        function claim_work_btn(work_id, publisher) {
+            if($("#no").text() === "编号"){
+                _sweet_alert_with_buttons(
+                '是否申领该任务',
+                '',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        document.getElementById("claimForm_workID").value = work_id;
+                        document.getElementById("claimForm_publisher").value = publisher;
+                        let formData = $("#claimForm").serialize();
+                        _post('/proposal/promise', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                if (res.content != null && res.content['is_first']) {
+                                    // first
+                                    firstCooperation(formData);
+                                } else {
+                                    _sweet_alert_notify('success', '申领成功', '');
+                                    _fresh_current_page(1000);
+                                }
+                            } else {
+                                _sweet_alert_notify('error', res.message[0], '')
+                            }
+                        });
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                'Confirm to claim the task',
+                '',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        document.getElementById("claimForm_workID").value = work_id;
+                        document.getElementById("claimForm_publisher").value = publisher;
+                        let formData = $("#claimForm").serialize();
+                        _post('/proposal/promise', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                if (res.content != null && res.content['is_first']) {
+                                    // first
+                                    firstCooperation(formData);
+                                } else {
+                                    _sweet_alert_notify('success', 'Success', '');
+                                    _fresh_current_page(1000);
+                                }
+                            } else {
+                                _sweet_alert_notify('error', res.message[0], '')
+                            }
+                        });
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }
+        }
+
+        function firstCooperation(formData) {
+            if($("#no").text() === "编号"){
+                _sweet_alert_with_buttons(
+                '质押保证金',
+                '首次同对方建立合作，需要质押10 M Token\n确认是否进行保证金质押',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        _post('/proposal/first_promise', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _post('/proposal/promise', formData, function (resp) {
+                                    let res = $.parseJSON(resp);
+                                    if (res.code === 'ok') {
+                                        if (res.content != null && res.content['is_first']) {
+                                            // first
+                                            _sweet_alert_notify('error', '出错', '')
+                                        } else {
+                                            _get('/balance', '', function (resp) {
+                                                let res = $.parseJSON(resp);
+                                                tip("已质押" + "10M Token, 余额为" + res + "M Token")
+                                            });
+                                            _sweet_alert_notify('success', '申领成功', '');
+                                            _fresh_current_page(1000);
+                                        }
+                                    } else {
+                                        _sweet_alert_notify('error', res.message[0], '')
+                                    }
+                                });
+                            } else {
+                                _sweet_alert_notify('error', res.message[0], '')
+                            }
+                        })
+                    } else {
+                        console.log("err");
+                    }
+                }
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                'Stake commitment',
+                'First time to work with your collaborators, please stake 10 M Token to set up the connection.',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        _post('/proposal/first_promise', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _post('/proposal/promise', formData, function (resp) {
+                                    let res = $.parseJSON(resp);
+                                    if (res.code === 'ok') {
+                                        if (res.content != null && res.content['is_first']) {
+                                            // first
+                                            _sweet_alert_notify('error', '出错', '')
+                                        } else {
+                                            _get('/balance', '', function (resp) {
+                                                let res = $.parseJSON(resp);
+                                                tip("已质押" + "10M Token, 余额为" + res + "M Token")
+                                            });
+                                            _sweet_alert_notify('success', 'Success', '');
+                                            _fresh_current_page(1000);
+                                        }
+                                    } else {
+                                        _sweet_alert_notify('error', res.message[0], '')
+                                    }
+                                });
+                            } else {
+                                _sweet_alert_notify('error', res.message[0], '')
+                            }
+                        })
+                    } else {
+                        console.log("err");
+                    }
+                }
+            );
+            }
+        }
+
+        function claim_work() {
+
+        }
+    </script>
+{% endblock %}

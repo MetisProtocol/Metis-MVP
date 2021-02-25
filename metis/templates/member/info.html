@@ -1,0 +1,413 @@
+{% extends "DAC/_layout.html" %}
+
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for('dac.index', dac_id=dac_id) }}">首页</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" style="line-height: 45px">
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+<!-- top bar username -->
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height" style="text-align: left">{{ user_info.username }}</h5>
+        <span class="text-white font-size-12" style="text-align: left">{{ user_info.email }}</span>
+    </div>
+{% endblock %}
+
+<!-- content -->
+
+{% block content %}
+<div class="content-page">
+    <div class="content">
+
+        <!-- Start Content-->
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box">
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);"></a></li>
+                                <li class="breadcrumb-item"><a href="javascript: void(0);" class="i18n" name="my_profile"></a></li>
+                                <li class="breadcrumb-item active i18n" name="my_profile"></li>
+                            </ol>
+                        </div>
+                        <h4 class="page-title i18n" name="my_profile">个人信息</h4>
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        <h4 class="header-title i18n" name="my_account"></h4>
+                        <div class="todo-task-lists mb-0 p-0">
+                            <div class="d-flex align-items-center">
+                                <div class="media-support-info" style="margin: 25px 0 25px 0">
+                                    <h6 style="font-size: 16px; text-align: left"><span class="i18n" name="email" id="email"></span><span>：{{ user_info.email }}</span></h6>
+                                    <h6 style="font-size: 16px; text-align: left"><span class="i18n" name="token_address"></span><span style="font-size: 13px">：{{ user_info.eth }}</span></h6>
+                                    <h6 style="font-size: 16px; text-align: left"><span class="i18n" name="token_balance"></span><span>：{{ balance }} M</span></h6>
+                                    <h6 style="font-size: 16px; text-align: left"><span class="i18n" name="eth_balance"></span><span>：{{ eth_balance }} </span></h6>
+                                </div>
+{#                                    <button type="button" class="btn btn-info col-sm-1">质押</button>#}
+                                <div class="col-sm-1"></div>
+                            </div>
+                            <button type="button" class="btn btn-warning col-sm-1 i18n" name="transfer" onclick="_transfer('{{ dac_id }}')"></button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        <h4 class="header-title i18n" name="my_collaboration"></h4>
+                        <div class="table-responsive-sm">
+                            <table id="myTable" class="table mb-0 table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th class="i18n" name="task_publisher"></th>
+                                        <th class="i18n" name="team"></th>
+                                        <th class="i18n" name="_status"></th>
+                                        <th class="i18n" name="operate"></th>
+                                    </tr>
+                                    {% if msc_info %}
+                                        {% for msc in msc_info %}
+                                        <tr>
+                                        <td>{{ msc.party_b }}</td>
+                                        <td>{{ msc.party_a }}</td>
+                                        <td>
+                                            {% if msc.withdraw and msc.withdraw == msc.party_b %}
+                                                <span class="badge badge-warning i18n" name="w_f_c_t_q"></span>
+                                            {% elif msc.withdraw and msc.withdraw == msc.party_a %}
+                                                <span class="badge badge-warning i18n" name="w_f_p_t_q"></span>
+                                            {% elif msc.withdraw and msc.withdraw == "000000000" %}
+                                                <span class="badge badge-warning i18n" name="w_f_a"></span>
+                                            {% else %}
+                                                <span class="badge badge-success i18n" name="i_c"></span>
+                                            {% endif %}
+
+                                        </td>
+                                        <td>
+                                            {% if not msc.withdraw %}
+                                            <button type="button" class="btn btn-primary i18n" name="arbitration"
+                                                    onclick="_zhongcai('{{ msc.msc_id }}', '{{ msc.withdraw }}')">
+
+                                            </button>
+                                            <button type="button" class="btn btn-primary i18n" name="out_collaboration"
+                                                    onclick="_withdraw('{{ msc.msc_id }}', '{{ msc.withdraw }}')">
+
+                                            </button>
+                                            {% elif msc.withdraw == "000000000" %}
+                                            <button type="button" class="btn btn-primary i18n" name="out_collaboration"
+                                                    onclick="_withdraw('{{ msc.msc_id }}', '{{ msc.withdraw }}')" disabled>
+
+                                            </button>
+                                            {% elif msc.withdraw != current_user.uid %}
+                                            <button type="button" class="btn btn-primary i18n" name="out_collaboration"
+                                                    onclick="_withdraw('{{ msc.msc_id }}', '{{ msc.withdraw }}')">
+
+                                            </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                            <form style="display: none">
+                                {{ transfer_form.csrf_token }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{#            <div class="row">#}
+{#                <div class="col-md-12">#}
+{#                    <div class="card-box">#}
+{#                        <h4 class="header-title i18n" name="my_profile">个人信息</h4>#}
+{#                        <div class="todo-task-lists mb-0 p-0">#}
+{#                                <div class="d-flex align-items-center p-3">#}
+{#                                    <div class="media-support-info ml-3">#}
+{#                                        <h6 style="font-size: 16px; text-align: left"><span class="i18n" name="email" >邮箱</span>：{{ user_info.email }}</h6>#}
+{#                                        <h6 style="font-size: 16px; text-align: left">M Token地址：{{ user_info.eth }}</h6>#}
+{#                                    </div>#}
+{#                                    <div>#}
+{#                                        <h6 style="font-size: 16px">DAC名称：</h6>#}
+{#                                        <h6 style="font-size: 16px">Logo：</h6>#}
+{#                                    </div>#}
+{#                                    <div class="col-sm-3"></div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            $(".user-edit").show()
+            $('#file').data('uploadifive').settings.formData = { 'csrf_token': $("#csrf_token").val()};   //动态更改formData的值
+            {#$('#file_upload').uploadifive('upload'); #}
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+        });
+        $("#file").uploadifive({
+                    "auto": true,
+                    "uploadScript": "/file_account",
+                    "buttonClass": "mdi mdi-pencil pencil",
+                    "buttonText": "",
+                    "removeCompleted": true,
+                    "width": 80,
+                    "height": 35,
+                    "onInit": function () {
+                        console.log("init... ");
+                    },
+                    "onUpload": function () {
+                        {#loading = weui.loading("正在上传");#}
+                    },
+                    "onUploadComplete": function (file, data) {
+                        window.location.reload()
+
+                    },
+                    "onError": function (errorType) {
+                        _sweet_alert_notify('error', errorType);
+                    },
+                    "onFallback": function () {
+                        _sweet_alert_notify('error', '上传发生错误');
+                    },
+                    "onQueueComplete": function () {
+                        if (loading) {
+                            loading.hide();
+                        }
+                    }
+                });
+
+        function _transfer(dac_id) {
+            if($("#email").text() === "邮箱"){
+                _sweet_alert_with_buttons(
+                '转账',
+                '<form id="transfer_form">\n' +
+                '{{ transfer_form.csrf_token }}\n' +
+                '<input type="password" class="form-control mb-0" name="private_key" placeholder="您的私钥">\n' +
+                '<input type="text" class="form-control mb-0" id="eth" name="receiver_eth" placeholder="收款人（公钥）">\n' +
+                '<input type="text" class="form-control mb-0" name="amount" id="balance" placeholder="转账金额（M）">\n' +
+                '</form>',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    let balance = $("#balance").val();
+                    let eth = $("#eth").val();
+                    let formData = $("#transfer_form").serialize();
+                    if (isConfirm === false){
+                        _post("/member/" + dac_id +"/info", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                tip(balance + "M Token, 已从您的账户转到" + eth )
+                                _sweet_alert_notify('success', '转账成功', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify(res[1]);
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                'Transfer',
+                '<form id="transfer_form">\n' +
+                '{{ transfer_form.csrf_token }}\n' +
+                '<input type="password" class="form-control mb-0" name="private_key" placeholder="Your Private Key">\n' +
+                '<input type="text" class="form-control mb-0" id="eth" name="receiver_eth" placeholder="To Public Key">\n' +
+                '<input type="text" class="form-control mb-0" name="amount" id="balance" placeholder="Amount">\n' +
+                '</form>',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    let balance = $("#balance").val();
+                    let eth = $("#eth").val();
+                    let formData = $("#transfer_form").serialize();
+                    if (isConfirm === false){
+                        _post("/member/" + dac_id +"/info", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                tip(balance + "M Token, 已从您的账户转到" + eth )
+                                _sweet_alert_notify('success', 'Success', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify(res[1]);
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+        }
+        
+        function _withdraw(msc_id, msc_withdraw) {
+            if($("#email").text() === "邮箱"){
+                _sweet_alert_with_buttons(
+                '是否确认解除合作关系',
+                '',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        _get('/member/{{ dac_id }}/' + msc_id, '', function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                if(msc_withdraw !== null && msc_withdraw !== "000000000"){
+                                    _sweet_alert_notify('success', '解除成功', '');
+                                    _fresh_current_page(1000);
+
+                                }
+                                else{
+                                    _sweet_alert_notify('success', '操作成功，请等待另一方解除', '');
+                                    _fresh_current_page(1000);
+                                }
+                            } else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                'Quit the collaboration?',
+                '',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        _get('/member/{{ dac_id }}/' + msc_id, '', function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                if(msc_withdraw !== null && msc_withdraw !== "000000000"){
+                                    _sweet_alert_notify('success', 'Success', '');
+                                    _fresh_current_page(1000);
+
+                                }
+                                else{
+                                    _sweet_alert_notify('success', 'Success. Wait for the orther one quit', '');
+                                    _fresh_current_page(1000);
+                                }
+                            } else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }
+
+        }
+
+        function _zhongcai(msc_id, msc_withdraw) {
+            if($("#email").text() === "邮箱"){
+                _sweet_alert_with_buttons(
+                '是否确认申请仲裁',
+                '',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        _get('/member/{{ dac_id }}/' + msc_id + '?zhongcai=1', '', function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', '申请成功，双方质押保证金已被冻结，仲裁官将在线下与您联系', '');
+                                _fresh_current_page(2000);
+                            } else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                'Apply for arbitrage',
+                '',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false) {
+                        // confirm
+                        _get('/member/{{ dac_id }}/' + msc_id + '?zhongcai=1', '', function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', '申请成功，双方质押保证金已被冻结，仲裁官将在线下与您联系', '');
+                                _fresh_current_page(2000);
+                            } else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                        // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押
+                    } else {
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+            );
+            }
+        }
+    </script>
+{% endblock %}

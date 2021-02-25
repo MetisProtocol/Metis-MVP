@@ -1,0 +1,23 @@
+title: user
+type: object
+properties:
+  id:
+    type: string
+  name:
+    type: string
+  email:
+    type: string
+  metainfo: # 什么东西？
+    type: string
+  balance:
+    type: string
+  level:  # ？
+    type: number
+  skillset: # ？
+    type: array
+    items:
+      type: string
+  language:
+    type: array
+    items:
+      type: string

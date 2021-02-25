@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- meta -->
+    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Metis Team">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- title -->
+    <title>Metis Protocol</title>
+
+    <!-- style sheets -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/weui.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}" />
+    <style>
+        .language{
+              cursor: pointer;
+              position: relative;
+              height: 30px;
+              width: 100%;
+              background: white;
+              box-sizing: border-box;
+              border-style: solid;
+              border-color: rgba(217, 217, 217, 1);
+              border-width: 0;
+              border-radius: 24px;
+              box-shadow: 0 6px 12px 0 rgba(0,0,0,0.1);
+              padding: 4px;
+            }
+    </style>
+
+</head>
+<body class="header-top-bg" style="line-height: 2.5;" id="_body">
+
+    <!-- Wrapper Start -->
+    <div class="wrapper">
+
+        <!-- Sidebar -->
+        {% block sidebar %}
+            <div class="iq-sidebar">
+
+            <!-- Sidebar Logo -->
+            <div class="iq-sidebar-logo d-flex justify-content-between">
+                <a href="/">
+                    <img src="{{ url_for('static', filename='images/metis_logo.png') }}" class="img-fluid" alt="">
+                    <span>Metis</span>
+                </a>
+
+                <div class="iq-menu-bt align-self-center">
+                    <div class="wrapper-menu">
+                        <div class="line-menu half start"></div>
+                        <div class="line-menu"></div>
+                        <div class="line-menu half end"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Menu -->
+            <div id="sidebar-scrollbar">
+                <nav class="iq-sidebar-menu">
+                    <ul class="iq-menu" id="_menu">
+
+                        <li id="_home">
+                            <a href="{{ url_for("home.index") }}" class="iq-waves-effect">
+                                <i class="las la-home"></i>
+                                <span>首页</span>
+                            </a>
+                        </li>
+
+                        <li id="_proposal_list">
+                            <a href="javascript:void(0)" class="iq-waves-effect">
+                                <i class="las la-check-square"></i>
+                                <span>工作管理</span>
+                                <i class="ri-arrow-right-s-line iq-arrow-right"></i>
+                            </a>
+                            <ul class="iq-submenu">
+                                <li>
+                                    <a href="{{ url_for("auth.register") }}">发布新工作</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for("auth.register") }}">工作列表</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for("auth.register") }}">已发布工作</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for("auth.register") }}">已获取工作</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li id="_publish_tasks">
+                            <a href="/" class="iq-waves-effect">
+                                <i class="las la-icons"></i>
+                                <span>活动</span>
+                            </a>
+                        </li>
+
+                        <li id="_get_tasks">
+                            <a href="javascript: void(0)" class="iq-waves-effect">
+                                <i class="las la-file-alt"></i>
+                                <span>知识管理</span>
+                                <i class="ri-arrow-right-s-line iq-arrow-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="p-3"></div>
+            </div>
+        </div>
+        {% endblock %}
+
+        <!-- Top Nav Bar -->
+        {% block topbar %}
+            <div class="iq-top-navbar">
+            <div class="iq-navbar-custom">
+
+                <!-- Logo content -->
+                <div class="iq-sidebar-logo">
+                    <div class="top-logo">
+                        <a href="{{ url_for('home.index') }}" class="logo">
+                            <img src="{{ url_for('static', filename='images/metis_logo.png') }}" class="img-fluid" alt="">
+                            <span>Metis</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- breadcrumb -->
+                {% block breadcrumb %}
+                {% endblock %}
+
+                <!-- Top Nav Menu -->
+                <nav class="navbar navbar-expand-lg navbar-light p-0">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-label="Toggle navigation">                        <i class="ri-menu-3-line"></i>
+                        <i class="ri-menu-3-line"></i>
+                    </button>
+                    <div class="iq-menu-bt align-self-center">
+                        <div class="wrapper-menu">
+                            <div class="line-menu half start"></div>
+                            <div class="line-menu"></div>
+                            <div class="line-menu half end"></div>
+                        </div>
+                    </div>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                        <!-- Language Swatch -->
+                        <div style="margin-left: 85%" class="navbar-nav">
+                            <select class="language" id="language">
+                                <option value="zh-CN">中文简体</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+
+                        <!-- full screen -->
+                        <ul class="navbar-nav ml-auto navbar-list">
+                            <li class="nav-item iq-full-screen">
+                                <a href="#" class="iq-waves-effect" id="btnFullscreen">
+                                    <i class="ri-fullscreen-line"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Profile -->
+                    <ul class="navbar-list">
+                        <li>
+                            <a href="#" class="search-toggle iq-waves-effect text-white">
+                                <img src="{{ url_for('static', filename='images/333.JPG') }}" class="img-fluid rounded" alt="user">
+                            </a>
+                            <div class="iq-sub-dropdown iq-user-dropdown">
+                                <div class="iq-card shadow-none m-0">
+                                    <div class="iq-card-body p-0">
+                                        <div class="bg-primary p-3">
+                                            <h5 class="mb-0 text-white line-height">USERNAME</h5>
+                                            <span class="text-white font-size-12">EMAIL</span>
+                                        </div>
+                                        <a href="#" class="iq-sub-card iq-bg-primary-hover">
+                                            <div class="media align-items-center">
+                                                <div class="rounded iq-card-icon iq-bg-primary">
+                                                    <i class="ri-file-user-line"></i>
+                                                </div>
+                                                <div class="media-body ml-3">
+                                                    <h6 class="mb-0">My Profile</h6>
+                                                    <p class="mb-0">View details</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div class="d-inline-block w-100 text-center p-3">
+                                            <a class="iq-bg-dark iq-sign-btn i18n" href="#" role="button">Sign Out
+                                                <i class="ri-login-box-line ml-2"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endblock %}
+
+        <!-- Page Content -->
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- footer -->
+    {% block footer %}
+        <footer class="bg-white iq-footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
+                        <li class="list-inline-item"><a href="#">Terms of Users</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 text-right">
+                    Copyright 2020 (C) <a href="#">Metis</a> All Rights Reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <!-- Script ref -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.appear.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/countdown.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/waypoints.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.counterup.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/weui.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/apexcharts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.i18n.properties-1.0.9.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/smooth-scrollbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lottie.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart-custom.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    <!-- Script -->
+    {% block script %}
+
+    {% endblock %}
+</body>
+</html>

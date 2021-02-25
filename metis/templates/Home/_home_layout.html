@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <!-- meta -->
+      <meta charset="UTF-8">
+      <meta charset="utf-8">
+       <meta id="i18n_pagename" content="strings">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="author" content="Metis Team">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
+      <meta charset="utf-8">
+
+       <!-- title -->
+      <title>Metis Protocol</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='components/sweetalert/css/sweetalert2.css') }}">
+{#      <!-- editor -->#}
+{#      <link rel="stylesheet" href="{{ url_for('static', filename='editor/css/editormd.css') }}">#}
+{#      <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">#}
+       <link rel="shortcut icon" href="{{ url_for('static', filename='images/metis_logo.png') }}" />
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+      <!-- Typography CSS -->
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.min.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/app.min.css') }}">
+
+      <style>
+        .language{
+              cursor: pointer;
+              position: relative;
+              height: 30px;
+              width: 100%;
+              background: white;
+              box-sizing: border-box;
+              border-style: solid;
+              border-color: rgba(217, 217, 217, 1);
+              border-width: 0;
+              border-radius: 24px;
+              box-shadow: 0 6px 12px 0 rgba(0,0,0,0.1);
+              padding: 4px;
+            }
+          .table td{
+              line-height: 38px;
+          }
+        </style>
+
+   </head>
+   <body>
+
+      <!-- Wrapper Start -->
+      <div class="wrapper" id="wrapper">
+        <div class="navbar-custom">
+                <ul class="list-unstyled topnav-menu float-right mb-0">
+
+                    <li class="dropdown d-none d-lg-block">
+                        <select id="language" class="language" style="margin-top: 18px">
+                            <option value="zh-CN">中文简体</option>
+                            <option value="en">English</option>
+                        </select>
+                    </li>
+                    <li class="dropdown notification-list">
+                        <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                            <img src="{{ url_for('static', filename='uploads/' + current_user.logo) }}" alt="user-image" class="rounded-circle">
+                            <span class="pro-user-name ml-1">
+                                {{ current_user.eth_addr[0:5] }}... <i class="mdi mdi-chevron-down"></i>
+                            </span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
+                            <!-- item-->
+                            <div class="dropdown-item noti-title">
+                                <h6 class="m-0">
+                                    Hello, {{ current_user.username }} !
+                                </h6>
+                            </div>
+
+                            <!-- item-->
+                            <a href="/member/MD0000001/info" class="dropdown-item notify-item">
+                                <i class="dripicons-user"></i>
+                                <span>My Profile</span>
+                            </a>
+
+                            <!-- item-->
+                            <a href="/member/MD0000001/wallet" class="dropdown-item notify-item">
+                                <i class="dripicons-card"></i>
+                                <span>My Wallet</span>
+                            </a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <!-- item-->
+                            <a href="{{ url_for("account.logout") }}" class="dropdown-item notify-item">
+                                <i class="dripicons-power"></i>
+                                <span>Logout</span>
+                            </a>
+
+                        </div>
+                    </li>
+                </ul>
+
+                <ul class="list-unstyled menu-left mb-5">
+                    <li class="float-left">
+                        <a href="index.html" class="logo">
+                            <span class="logo-lg">
+                                <img src="{{ url_for('static', filename='images/metis_logo.png') }}" alt="" height="50" style="margin-right: 15px;margin-bottom: 15px">
+                                <span style="font-size: 30px;color: #4e555b;font-weight:bold">Metis</span>
+                            </span>
+                            <span class="logo-sm">
+                                <img src="{{ url_for('static', filename='images/metis_logo.png') }}" alt="" height="50">
+                            </span>
+                        </a>
+                    </li>
+                    <li class="float-left">
+                        <a class="button-menu-mobile navbar-toggle">
+                            <div class="lines">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+
+          <div class="left-side-menu">
+
+                <div class="slimscroll-menu">
+
+                    <!--- Sidemenu -->
+                    <div id="sidebar-menu">
+
+                        <ul class="metismenu" id="side-menu">
+
+
+                            <div class="left-user">
+                                <div class="user-box">
+                                    <div class="user-img">
+                                        <img src="{{ url_for('static', filename='uploads/' + current_user.logo) }}" alt="user-img" title="Mat Helme" class="rounded-circle img-fluid">
+{#                                        <a href="javascript:void(0);" class="user-edit"><i class="mdi mdi-pencil"></i></a>#}
+                                    </div>
+
+                                    <h5><a href="javascript: void(0);">{{ current_user.eth_addr[0:20] }}...</a> </h5>
+                                </div>
+                            </div>
+
+                            <li id="_all">
+                            <a href="{{ url_for("home.index") }}" class="iq-waves-effect">
+                                <span class="i18n" name="all_dac"></span>
+                            </a>
+                        </li>
+
+                        <li id="_joined">
+                            <a href="{{ url_for("home.joined") }}" class="iq-waves-effect">
+                                <span class="i18n" name="joined_dac"></span>
+                            </a>
+                        </li>
+
+                        <li id="_created">
+                            <a href="{{ url_for("home.created") }}" class="iq-waves-effect">
+                                <span class="i18n" name="my_dac"></span>
+                            </a>
+                        </li>
+
+                        </ul>
+
+                    </div>
+                    <!-- End Sidebar -->
+
+                    <div class="clearfix"></div>
+
+                </div>
+                <!-- Sidebar -left -->
+
+            </div>
+      {% block content %}
+
+      {% endblock %}
+
+   </div>
+
+    <script src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/sweetalert/js/sweetalert2.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/vendor.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/app.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/jquery.i18n.properties-1.0.9.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+
+    <!-- Script -->
+    {% block script %}
+
+    {% endblock %}
+   </body>
+</html>

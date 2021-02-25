@@ -1,0 +1,321 @@
+{% extends "DAC/_layout.html" %}
+
+{% block content %}
+    <div class="content-page">
+                <div class="content">
+
+                    <!-- Start Content-->
+                    <div class="container-fluid">
+
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box">
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);"></a>DAC</li>
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);" class="i18n" name="knowledge_item"></a></li>
+                                            <li class="breadcrumb-item active i18n" name="knowledge_item"></li>
+                                        </ol>
+                                    </div>
+                                    <h4 class="page-title i18n" name="knowledge_item" id="knowledge_item"></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% for knowledge in knowledge_list %}
+                                <div class="col-md-6 col-xl-4">
+
+                                    <!-- Simple card -->
+                                    <div class="card">
+{#                                        <img class="card-img-top img-fluid" src="assets/images/WechatIMG9.png" alt="Card image cap">#}
+                                        <div class="card-body" style="height: 190px">
+                                            <h3 class="card-title">{{ knowledge.knowledge_detail_name }}</h3>
+                                            <p class="card-text">{{ knowledge.knowledge_describe }}</p>
+                                            {% if is_admin or current_user.uid == knowledge.knowledge_detail_writer or current_user.uid in json.loads(knowledge.knowledge_detail_joiner) %}
+                                               <button class="btn btn-info i18n" name="enter" onclick="window.location.href='/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}/info'" type="button">
+
+                                               {% if is_admin and knowledge.review_status == 1 %}
+                                                <button class="btn btn-info i18n" name="review" onclick="window.location.href='/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}/review'" type="button" style="margin-left: 20px">
+
+                                               </button>
+                                               {% endif %}
+                                               </button>
+                                               {% elif not knowledge.knowledge_detail_writer %}
+                                               <button class="btn btn-info i18n" name="consolidate" onclick="_writer('{{ json.loads(knowledge.knowledge_detail_writer_balance).pledge }}', '{{ knowledge.knowledge_detail_id }}')" type="button">
+
+                                               </button>
+                                               <button class="btn btn-info i18n" name="discuss" onclick="_join('{{ json.loads(knowledge.knowledge_detail_joiner_balance).pledge }}', '{{ knowledge.knowledge_detail_id }}')" type="button">
+
+                                               </button>
+                                               {% else %}
+                                               <button class="btn btn-info i18n" name="discuss" onclick="_join('{{ json.loads(knowledge.knowledge_detail_joiner_balance).pledge }}', '{{ knowledge.knowledge_detail_id }}')" type="button">
+
+                                               </button>
+                                               {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                                <form style="display: none" id="knowledge_detail_form">
+                                    {{ knowledge_join_form.csrf_token }}
+                               </form>
+                            {% if is_admin %}
+                                <div class="col-md-6 col-xl-4">
+
+                                    <!-- Simple card -->
+                                    <div class="card">
+{#                                        <img class="card-img-top img-fluid" src="assets/images/WechatIMG9.png" alt="Card image cap">#}
+                                        <div class="card-body"  style="min-height: 190px">
+                                            <h3 class="card-title  i18n" name="add_knowledge_time"></h3>
+                                            <a href="#" onclick="_add_knowledge_detail()">
+                                              <img src="{{ url_for('static', filename='images/add.png') }}" alt="add-dac" style="height: 75px">
+                                          </a>
+{#                                            <button class="btn btn-info col-sm-3" onclick="window.location.href='/knowledge/{{ dac_id }}/{{ knowledge.knowledge_id }}'" type="button">#}
+{#                                                      进 入#}
+                    {#                                    <span>{{ url_for("dac.index", dac_id=dac.dac_id) }}</span>#}
+{#                                                  </button>#}
+                                        </div>
+                                    </div>
+                                </div>
+                           {% endif %}
+                        </div>
+                    </div>
+                </div>
+    </div>
+
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function(){
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+         })
+        _switch_sub_menu("_knowledge", "_sub_knowledge_index");
+        function _add_knowledge_detail() {
+            if($("#knowledge_item") === "知识条目"){
+                _sweet_alert_with_buttons(
+                '请输入需要添加的知识条目',
+                '<form id="knowledge_form">\n' +
+                '{{ form.csrf_token }}\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="knowledge_detail_name" value="" id="knowledge_detail_name" placeholder="知识条目名称">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="knowledge_describe" value="" id="knowledge_describe" placeholder="知识条目描述">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="writer_balance" value="" id="writer_balance" placeholder="记录人质押">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="writer_excitation" value="" id="writer_excitation" placeholder="记录人激励">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="joiner_balance" value="" id="joiner_balance" placeholder="参与人质押">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="joiner_excitation" value="" id="joiner_excitation" placeholder="参与人激励">\n' +
+                '    </form>',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        if (!$("#knowledge_detail_name").val()){
+                            _sweet_alert_notify('error', '知识管理分类名称不能为空')
+                            }else{
+                            _sweet_alert_with_buttons(
+                            '请质押完成新的知识条目的生成\n 需质押额度：100 M Token',
+                            '',
+                            'warning',
+                            '确定',
+                            '取消',
+                            function (isConfirm) {
+                                if (isConfirm === false){
+                                    let formData = $("#knowledge_form").serialize();
+                                    _post('/knowledge/{{ dac_id }}/{{ knowledge_id }}', formData, function (resp) {
+                                        let res = $.parseJSON(resp);
+                                        if (res.code === 'ok') {
+                                            _sweet_alert_notify('success', '添加成功', '');
+                                            _fresh_current_page(1000);
+                                        }
+                                        else {
+                                            _sweet_alert_notify('error', res.message[0], '')
+                                        }
+                                    });
+                                }else {
+                                    console.log("cancel");
+                                }
+                            }
+                        )
+                        }
+
+                    }
+                    else{
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                'Please add new knowledge item',
+                '<form id="knowledge_form">\n' +
+                '{{ form.csrf_token }}\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="knowledge_detail_name" value="" id="knowledge_detail_name" placeholder="Item Name">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="knowledge_describe" value="" id="knowledge_describe" placeholder="Item Description">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="writer_balance" value="" id="writer_balance" placeholder="Consolidator Stake">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="writer_excitation" value="" id="writer_excitation" placeholder="Consolidator Incentives">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="joiner_balance" value="" id="joiner_balance" placeholder="Participant Stake">\n' +
+                '        <input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" name="joiner_excitation" value="" id="joiner_excitation" placeholder="Participant Incentives">\n' +
+                '    </form>',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        if (!$("#knowledge_detail_name").val()){
+                            _sweet_alert_notify('error', 'Knowledge Entry Name can not be none')
+                            }else{
+                            _sweet_alert_with_buttons(
+                            'Please stake 100 M Token to add new knowledge item',
+                            '',
+                            'warning',
+                            'OK',
+                            'Cancel',
+                            function (isConfirm) {
+                                if (isConfirm === false){
+                                    let formData = $("#knowledge_form").serialize();
+                                    _post('/knowledge/{{ dac_id }}/{{ knowledge_id }}', formData, function (resp) {
+                                        let res = $.parseJSON(resp);
+                                        if (res.code === 'ok') {
+                                            _sweet_alert_notify('success', 'Success', '');
+                                            _fresh_current_page(1000);
+                                        }
+                                        else {
+                                            _sweet_alert_notify('error', res.message[0], '')
+                                        }
+                                    });
+                                }else {
+                                    console.log("cancel");
+                                }
+                            }
+                        )
+                        }
+
+                    }
+                    else{
+                        //cancel
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+        }
+        function _writer(balance, knowledge_id) {
+            if($("#knowledge_item") === "知识条目") {
+                _sweet_alert_with_buttons(
+                    '参与记录需质押额度：' + balance + ' M Token',
+                    '',
+                    'warning',
+                    '确定',
+                    '取消',
+                    function (isConfirm) {
+                        if (isConfirm === false) {
+                            let formData = $("#knowledge_detail_form").serialize();
+                            _post('/knowledge/' + knowledge_id + '/writer/join', formData, function (resp) {
+                                let res = $.parseJSON(resp);
+                                if (res.code === 'ok') {
+                                    _sweet_alert_notify('success', '申请成功', '');
+                                    _fresh_current_page(1000);
+                                } else {
+                                    _sweet_alert_notify('error', res.message, '')
+                                }
+                            });
+                        } else {
+                            console.log("cancel");
+                        }
+                    }
+                )
+            }else{
+                _sweet_alert_with_buttons(
+                    'Please stake ' + balance + ' M Token to participate in the content consolidation',
+                    '',
+                    'warning',
+                    'OK',
+                    'Cancel',
+                    function (isConfirm) {
+                        if (isConfirm === false) {
+                            let formData = $("#knowledge_detail_form").serialize();
+                            _post('/knowledge/' + knowledge_id + '/writer/join', formData, function (resp) {
+                                let res = $.parseJSON(resp);
+                                if (res.code === 'ok') {
+                                    _sweet_alert_notify('success', 'Success', '');
+                                    _fresh_current_page(1000);
+                                } else {
+                                    _sweet_alert_notify('error', res.message, '')
+                                }
+                            });
+                        } else {
+                            console.log("cancel");
+                        }
+                    }
+                )
+            }
+        }
+        function _join(balance, knowledge_id) {
+            if($("#knowledge_item") === "知识条目") {
+            _sweet_alert_with_buttons(
+                '参与讨论需质押额度：'+ balance +' M Token',
+                '',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        let formData = $("#knowledge_detail_form").serialize();
+                        _post('/knowledge/' + knowledge_id +'/join/join', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', '申请成功', '');
+                                _fresh_current_page(1000);
+                            }
+                            else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                    }else {
+                        console.log("cancel");
+                    }
+                }
+            )
+            }
+            else{
+               _sweet_alert_with_buttons(
+                'Please stake ' + balance + ' M Token to participate in the discussion',
+                '',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        let formData = $("#knowledge_detail_form").serialize();
+                        _post('/knowledge/' + knowledge_id +'/join/join', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', 'Success', '');
+                                _fresh_current_page(1000);
+                            }
+                            else {
+                                _sweet_alert_notify('error', res.message, '')
+                            }
+                        });
+                    }else {
+                        console.log("cancel");
+                    }
+                }
+            )
+            }
+        }
+        // confirm
+
+    </script>
+{% endblock %}

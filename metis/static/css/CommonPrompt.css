@@ -1,0 +1,126 @@
+#infoBox{
+    box-shadow: 0 0 15px rgba(0,0,0,.15), 0 0 1px 1px rgba(0,0,0,.1);
+    position: fixed;
+    z-index: 2;
+    max-width: 30Rem;
+    width: 100%;
+    border-radius: 0.5Rem;
+    padding: 1Rem 1Rem 0 1Rem;
+    min-height: 8Rem;
+    min-width: 20Rem;
+    transform: scale(0.8);
+    font-family: SFUIText,Helvetica Neue,sans-serif;
+    box-sizing: border-box;
+}
+#infoBox *{
+    font-family: SFText,Helvetica,sans-serif;
+    font-variant: tabular-nums;
+}
+
+
+
+.infoBox_body{
+    margin-left: 6.25rem;
+    max-width: 78.5%;
+}
+.infoBox_body p{
+    font-weight: 500;
+    font-size: 20px;
+    color:  #303030;
+}
+
+.infoBox_body_content{
+    margin-top: 2%;
+}
+
+.infoBox_body_content p{
+    color: #474747;
+    font-size: 16px;
+    line-height: 1.5625rem;
+    text-align: left;
+    font-weight: initial;
+    margin-bottom: 0.625rem ;
+}
+.infoBox_option{
+    margin-top: 2%;
+    margin-left: 6.25rem;
+    max-width: 78.5%;
+    height: 2Rem;
+    margin-bottom: 2%;
+}
+.infoBox_option_entity{
+    float: right;
+    font: inherit;
+    text-align: left;
+    font-size: 17px;
+    color: #187efb;
+    line-height: 2Rem;
+    cursor: pointer;
+    font-weight: 100
+}
+
+.infoBox_option_br{
+    cursor: default;
+    float: right;
+    color: gray;
+    opacity: 0.5;
+    font-size: 20px;
+    line-height: 1.875rem;
+    margin: 0 1Rem 0 1Rem;
+}
+.infoBox_animation_show{
+    animation: infoBoxShow 0.4s ease-in-out;
+    animation-fill-mode:  forwards ;
+}
+.infoBox_animation_hide{
+    animation: infoBoxHide 0.4s ease-in-out;
+    animation-fill-mode:  forwards ;
+}
+
+
+@keyframes infoBoxHide {
+    0%{
+        transform: scale(1.00005);
+        opacity: 1;
+    }
+    100%{
+        transform: scale(0.8);
+        opacity: 0;
+        display: none;
+    }
+}
+
+@keyframes infoBoxShow  {
+    0%{
+        transform: scale(0.8);
+        display: inline-block;
+        opacity: 0;
+    }
+    100%{
+        transform: scale(1.00005);
+        opacity: 1;
+    }
+}
+
+
+.infoBox_img_war{
+    background: rgb(255,255,255);
+    background-image: url("./images/war.png") ;
+    background-position: 1.5Rem 1.4Rem;
+    background-repeat: no-repeat;
+    background-size: 4.125rem;
+}
+.infoBox_img_privacy{
+    background: rgb(255,255,255);
+    background-image: url("./images/privacy.png") ;
+    background-position: 1.5Rem 0.62Rem;
+    background-repeat: no-repeat;
+    background-size: 4.125rem;
+}
+.infoBox_img_error{
+    background: rgb(255,255,255);
+    background-image: url("./images/error.png") ;
+    background-position: 1.8Rem 0.89Rem;
+    background-repeat: no-repeat;
+    background-size: 4.125rem;
+}

@@ -1,0 +1,161 @@
+{% extends "_layout_signin.html" %}
+
+{% block content %}
+    <div class="account-pages w-100 mt-5 mb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6 col-xl-5">
+                        <div class="card">
+
+                            <div class="card-body p-4">
+
+                                <div class="text-center mb-4">
+                                    <a href="index.html">
+                                        <span><img src="{{ url_for('static', filename='images/metis_logo.png') }}" alt="" height="75"></span>
+                                    </a>
+                                </div>
+
+                                <form class="pt-2" id="_registration">
+                                    {{ form.csrf_token }}
+
+                                    <div class="form-group mb-3">
+                                        <label for="emailaddress">DAC Name</label>
+                                        <input class="form-control" type="email" required="" placeholder="Dac Name" name="dac_name">
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label for="password">DAC Describe</label>
+                                        <input class="form-control" type="text" required="" placeholder="DAC Describe" name="dac_describe">
+                                    </div>
+
+{#                                    <div class="custom-control custom-checkbox mb-3">#}
+{#                                        <input type="checkbox" class="custom-control-input" id="checkbox-signin" checked>#}
+{#                                    </div>#}
+                                    <div class="form-group mb-3">
+                                        <label style="display: block">DAC Logo</label>
+                                        <input type="text" class="form-control" id="file_txt" placeholder="Upload Logo" name="file" style="width: 70%;display: initial !important" readonly>
+                                        <input type="file" id="file">
+                                    </div>
+{#                                    <img src="../../../uploads/1594885682080.jpg" alt="">#}
+
+                                    <div class="form-group mb-0 text-center">
+                                        <button class="btn btn-info btn-block" type="button" onclick="_submit()"> Create </button>
+                                    </div>
+
+
+                                </form>
+
+{#                                <div class="row mt-3">#}
+{#                                    <div class="col-12 text-center">#}
+{#                                        <p class="text-muted mb-0">Don't have an account? <a href="/account/register" class="text-dark ml-1"><b>Sign Up</b></a></p>#}
+{#                                    </div> <!-- end col -->#}
+{#                                </div>#}
+                                <!-- end row -->
+
+                            </div> <!-- end card-body -->
+                        </div>
+                        <!-- end card -->
+
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </div>
+
+
+
+
+
+
+
+
+{#    <div class="sign-in-from bg-white">#}
+{#        <div id="notify"></div>#}
+{#        <h2 class="mb-0">Create DAC</h2>#}
+{#        <form class="mt-4" id="_registration">#}
+{#            {{ form.csrf_token }}#}
+{#            <div class="form-group">#}
+{#                <label for="dac_name">DAC Name</label>#}
+{#                <input type="text" class="form-control mb-0" id="dac_name" placeholder="Enter DAC Name" name="dac_name">#}
+{#            </div>#}
+{#            <div class="form-group">#}
+{#                <label for="desc">DAC Describe</label>#}
+{#                <input type="text" class="form-control mb-0" id="desc" placeholder="Enter describe" name="dac_describe">#}
+{#            </div>#}
+{#            <div class="form-group">#}
+{#                <label for="desc" style="display: block">DAC Logo</label>#}
+{#                <input type="text" class="form-control mb-0" id="file_txt" placeholder="Upload Logo" name="file" style="width: 70%;display: initial !important" readonly>#}
+{#                <input type="file" id="file">#}
+{#            </div>#}
+{#            <img src="../../../uploads/1594885682080.jpg" alt="">#}
+{#            <div class="d-inline-block w-100">#}
+{#                <button type="button" class="btn btn-primary float-right" onclick="_submit()">Create</button>#}
+{#            </div>#}
+{#            <div id="file-save">#}
+{##}
+{#            </div>#}
+{#        </form>#}
+{#    </div>#}
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            $('#file').data('uploadifive').settings.formData = { 'csrf_token': $("#csrf_token").val()};   //动态更改formData的值
+        });
+        function _submit() {
+            _post('/generate', $("#_registration").serialize(), function (resp) {
+               let res = $.parseJSON(resp);
+               if (res.code === 'ok') {
+                   _notify("notify", "DAC成功建立", "success");
+                   fresh_redirect('/dac/' + res.content.dac_id, 800)
+               }
+               else{
+                   _notify("notify", res.message[0], "error");
+                   window.setTimeout(
+                       () => {_remove_notify("notify")},
+                       1000
+                   )
+               }
+            })
+        }
+        let loading;
+        $("#file").uploadifive({
+                "auto": true,
+                "uploadScript": "/file",
+                "buttonClass": "btn btn-primary float-right uploads-btn",
+                "buttonText": "Upload",
+                "removeCompleted": true,
+                "width": 70,
+                "height": 35,
+                "onInit": function () {
+                    console.log("init... ");
+                },
+                "onUpload": function () {
+                    {#loading = weui.loading("正在上传");#}
+                },
+                "onUploadComplete": function (file, data) {
+                    let resp = $.parseJSON(data);
+                    $("#file_txt").val(resp);
+                    resp = '../../static/uploads/' + resp;
+                    console.log(resp);
+                    let node = '<img src="' + resp +'" style="width:100px; height:100px">';
+                    $("#file-save").empty();
+                    $(node).appendTo($("#file-save"));
+
+                },
+                "onError": function (errorType) {
+                    _sweet_alert_notify('error', errorType);
+                },
+                "onFallback": function () {
+                    _sweet_alert_notify('error', '上传发生错误');
+                },
+                "onQueueComplete": function () {
+                    if (loading) {
+                        loading.hide();
+                    }
+                }
+            });
+    </script>
+{% endblock %}

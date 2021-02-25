@@ -1,0 +1,172 @@
+{% extends "DAC/_layout.html" %}
+{% from "macro.html" import display_work_status %}
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for("dac.index", dac_id=dac_id) }}">首页</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+
+
+<!-- Page Content -->
+{% block content %}
+
+
+    <div id="content-page" class="content-page">
+        <div class="container-fluid">
+            <div class="row">
+
+                <!-- content -->
+                <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-lg-12 profile-left">
+                        <div class="tab-content" style="margin-bottom: 20px;padding: 0">
+                            <div class="tab-pane active show" id="working" role="tabpanel">
+                                <div class="card-box">
+                                    <div class="iq-card-header d-flex justify-content-between">
+                                        <div class="iq-header-title">
+                                            <h2 class="card-title">{{ knowledge.knowledge_detail_name }}</h2>
+                                        </div>
+                                    </div>
+                                    <div class="iq-card-body">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" style="padding: 0">
+                            <div class="tab-pane active show" id="working" role="tabpanel">
+                                <div class="card-box">
+                                    <div class="iq-card-header d-flex justify-content-between">
+                                        <div class="iq-header-title">
+                                            <h2 class="card-title i18n" name="review" id="review"></h2>
+
+                                        </div>
+                                    </div>
+                                    <div class="iq-card-body">
+                                        <ul class="suggestions-lists m-0 p-0" style="border-bottom: 1px solid #f2edff;margin-top: 15px!important">
+                                        <li class="d-flex mb-4 align-items-center">
+                                            <div class="user-img img-fluid">
+                                                <img src="{{ url_for('static', filename='uploads/' + members_logo[knowledge_info.knowledge_info_belongs]) }}" alt="story-img" class="rounded-circle avatar-40" style="height: 70px;">
+                                            </div>
+                                            <div class="media-support-info ml-3">
+                                                <h6>{{ knowledge_info.knowledge_info_belongs }}</h6>
+                                            </div>
+                                        </li>
+                                        <li class="d-flex mb-4 align-items-center">
+                                            <div class="media-support-info ml-3">
+                                                <h6>{{ knowledge_info.knowledge_info_memo | safe }}</h6>
+                                            </div>
+                                        </li>
+                                        <li class="d-flex mb-4 align-items-center">
+                                            <div class="media-support-info ml-3" style="width: 100%">
+                                                <span style="margin-left: 30px"><span class="i18n" name="time"></span>：{{ knowledge_info.ctime.strftime("%Y-%m-%d %H:%M:%S") }}</span>
+                                                {% if knowledge.review_status == 1 %}
+                                                <button class="btn btn-info col-sm-1 i18n" name="approve" onclick="_review('{{ knowledge.knowledge_detail_id }}')" type="button" style="display: block; float: right; margin-left: 20px">
+
+                                                </button>
+                                                    {% elif knowledge.review_status == 2 %}
+                                                    <span class="badge badge-success i18n" name="approve"></span>
+                                                {% endif %}
+
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+            </div>
+            </div>
+        </div>
+{#        <form id="knowledge_info_form" style="display: none">#}
+{#            {{ form.csrf_token }}#}
+{#            <input type="text" id="knowledge_detail_name" name="knowledge_detail_name" value="{{ knowledge.knowledge_detail_name }}">#}
+{#            <input type="text" id="knowledge_describe" name="knowledge_describe" value="{{ knowledge.knowledge_describe }}">#}
+{#            <input type="text" id="knowledge_detail_writer_pledge" name="knowledge_detail_writer_pledge" value="{{ json.loads(knowledge.knowledge_detail_writer_balance).pledge }}">#}
+{#            <input type="text" id="knowledge_detail_joiner_pledge" name="knowledge_detail_joiner_pledge" value="{{ json.loads(knowledge.knowledge_detail_joiner_balance).pledge }}">#}
+{#            <input type="text" id="knowledge_detail_writer_excitation" name="knowledge_detail_writer_excitation" value="{{ json.loads(knowledge.knowledge_detail_writer_balance).excitation }}">#}
+{#            <input type="text" id="knowledge_detail_joiner_excitation" name="knowledge_detail_joiner_excitation" value="{{ json.loads(knowledge.knowledge_detail_joiner_balance).excitation }}">#}
+{#        </form>#}
+    </div>
+{% endblock %}
+
+<!-- script -->
+{% block script %}
+    {{ super() }}
+    <script>
+        $(function(){
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+         })
+        function _review(knowledge_id) {
+            if($("#review").text() === "记录审核"){
+                _sweet_alert_with_buttons(
+                '是否确认审核通过，记录方将获得{{ json.loads(knowledge.knowledge_detail_writer_balance).excitation }}M Token激励，讨论方每位将获得{{ json.loads(knowledge.knowledge_detail_joiner_balance).excitation }}M Token激励',
+                '',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        _get('/knowledge/review/{{ dac_id }}/' + knowledge_id, '', function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', '审核成功', '');
+                                _fresh_current_page(1000);
+                            }
+                            else {
+                                _sweet_alert_notify('error', res.message[0], '')
+                            }
+                        });
+                    }else {
+                        console.log("cancel");
+                    }
+                }
+            )
+            }else{
+                _sweet_alert_with_buttons(
+                'If you approve, the Consolidator will get {{ json.loads(knowledge.knowledge_detail_writer_balance).excitation }} M Token and the Participants will get {{ json.loads(knowledge.knowledge_detail_joiner_balance).excitation }} M Token as the incentives.',
+                '',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        _get('/knowledge/review/{{ dac_id }}/' + knowledge_id, '', function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', 'Success', '');
+                                _fresh_current_page(1000);
+                            }
+                            else {
+                                _sweet_alert_notify('error', res.message[0], '')
+                            }
+                        });
+                    }else {
+                        console.log("cancel");
+                    }
+                }
+            )
+            }
+        }
+
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "DAC/_layout.html" %}
+
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for("dac.index", dac_id=dac_id) }}"></a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" style="line-height: 45px"></li>
+                <li class="breadcrumb-item active" aria-current="page" style="line-height: 45px"></li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+<!-- top bar username -->
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height">{{ user_info.username }}</h5>
+        <span class="text-white font-size-12">{{ user_info.email }}</span>
+    </div>
+{% endblock %}
+
+<!-- content -->
+
+{% block content %}
+    <div class="content-page" id="content-page">
+        <div class="container-fluid">
+            <div class="row">
+
+                <div class="col-lg-8" style="margin: 10% auto">
+                    <div class="card-box">
+                        <div class="iq-card-header d-flex justify-content-between">
+                            <div class="iq-card-title">
+                                <h4 class="card-title i18n" id="publish" name="publish"></h4>
+                            </div>
+                        </div>
+                        <div class="iq-card-body">
+                            <form class="mt-4" id="_add_work">
+                                {{ form.csrf_token }}
+                                <div id="_notify"></div>
+                                <div class="form-group">
+                                    <label for="work_name" class="i18n" name="name"> <i style="color: red">*</i></label>
+                                    <input type="text" class="form-control mb-0" id="work_name" placeholder="Enter work name" name="work_name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="work_expiry" class="i18n" name="deadline"> <i style="color: red">*</i></label>
+                                    <input type="text" class="form-control mb-0" id="work_expiry" placeholder="Deadline" name="work_expiry" data-provide="datepicker" data-date-autoclose="true">
+                                </div>
+                                <div class="form-group">
+                                    <label for="work_excitation" class="i18n" name="incentives"> <i style="color: red">*</i></label>
+                                    <input type="number" class="form-control mb-0" id="work_excitation" placeholder="Incentives" name="work_excitation">
+                                </div>
+                                <div class="d-inline-block w-100">
+                                    <button type="button" class="btn btn-primary float-right col-sm-2 i18n" name="submit" onclick="_submit('{{ dac_id }}')"></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+<!-- script -->
+{% block script %}
+    <script>
+        $(function(){
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+         })
+        _switch_sub_menu("_proposal_list", "_sub_proposal_list_add");
+        function _submit(dac_id) {
+            if($("#publish").text() === 'Publish New Task'){
+                _sweet_alert_with_buttons(
+                'Confirm to publish',
+                '',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        let formData = $("#_add_work").serialize();
+                        let add_proposal_uri = '/proposal/' + dac_id + '/add';
+                        let published_proposal_uri = '/proposal/' + dac_id + '/published';
+                        _post(add_proposal_uri, formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', 'Success', '');
+                                fresh_redirect(published_proposal_uri, 800);
+                            }
+                            else{
+                                {#alert(res.message[0]);#}
+                                if(res.message[0] === '清输入正确的截止日期'){
+                                    _notify("_notify", 'Please input the correct date.', 'error');
+                                }else{
+                                    _notify("_notify", res.message[0], 'error');
+                                }
+                                window.setTimeout(
+                                    () => _remove_notify("_notify"),
+                                    1000
+                                )
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                '确认发布',
+                '是否确认发布任务？',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        let formData = $("#_add_work").serialize();
+                        let add_proposal_uri = '/proposal/' + dac_id + '/add';
+                        let published_proposal_uri = '/proposal/' + dac_id + '/published';
+                        _post(add_proposal_uri, formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok') {
+                                _sweet_alert_notify('success', '创建成功', '创建成功');
+                                fresh_redirect(published_proposal_uri, 800);
+                            }
+                            else{
+                                _notify("_notify", res.message[0], 'error');
+                                window.setTimeout(
+                                    () => _remove_notify("_notify"),
+                                    1000
+                                )
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+        }
+    </script>
+{% endblock %}

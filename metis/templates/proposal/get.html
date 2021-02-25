@@ -1,0 +1,184 @@
+{% extends "DAC/_layout.html" %}
+{% from "macro.html" import display_work_status %}
+
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for('dac.index', dac_id=dac_id) }}"></a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" style="line-height: 45px"></li>
+                <li class="breadcrumb-item active" aria-current="page" style="line-height: 45px"></li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+<!-- top bar username -->
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height">{{ user_info.username }}</h5>
+        <span class="text-white font-size-12">{{ user_info.email }}</span>
+    </div>
+{% endblock %}
+
+<!-- content -->
+
+{% block content %}
+    <div class="content-page">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box">
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">DAC</a></li>
+                                <li class="breadcrumb-item"><a href="javascript: void(0);" class="i18n" name="tasks_list"></a></li>
+                                <li class="breadcrumb-item active i18n" name="job"></li>
+                            </ol>
+                        </div>
+                        <h4 class="page-title i18n" name="job"></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        <div class="iq-card-header d-flex justify-content-between">
+{#                             <div class="iq-card-title">#}
+{#                                 <h4 class="card-title">已发布的工作</h4>#}
+{#                             </div>#}
+                        </div>
+                        <div class="iq-card-body">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="i18n" name="no." id="no"></th>
+                                        <th class="i18n" name="name"></th>
+                                        <th class="i18n" name="create_date"></th>
+                                        <th class="i18n" name="status"></th>
+                                        <th class="i18n" name="operate"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for work in works %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ work.work_name }}</td>
+                                        <td>{{ work.work_ctime }}</td>
+                                        <td>{{ display_work_status(work.work_status, work.publisher_promise) }}</td>
+                                        {% if work.work_status == 1 and work.publisher_promise %}
+                                        <td><button class="btn btn-info i18n" name="submit" onclick="_submit_work_btn('{{ dac_id }}', '{{ work.work_id }}')"></button></td>
+                                        {% elif work.work_status == 2 %}
+                                        <td><button class="btn btn-info i18n" name="check" onclick="_submit_work_btn('{{ dac_id }}', '{{ work.work_id }}')"></button></td>
+                                        {% elif work.work_status == 3 or work.work_status == 5 %}
+                                        <td><button class="btn btn-info i18n" name="stettled" onclick="_settlement('{{ work.work_id }}', '{{ dac_id }}')"></button></td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <form class="mt-4" id="active_work_form" style="display: none">
+                                {{ excitation_form.csrf_token }}
+                                <div class="form-group">
+                                    <label for="active_dac_id">DAC ID</label>
+                                    <input type="text" id="active_dac_id" name="active_dac_id">
+                                </div>
+                                <div class="form-group">
+                                    <label for="active_work_id">work ID</label>
+                                    <input type="text" id="active_work_id" name="active_work_id">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+                </div>
+            </div>
+{% endblock %}
+
+<!-- script -->
+{% block script %}
+    <script>
+    $(function(){
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+         })
+        _switch_sub_menu("_proposal_list", "_sub_proposal_list_get");
+        function _submit_work_btn(dac_id, work_id) {
+            location.href = '/proposal/' + dac_id + '/' + work_id +  '/info';
+        }
+        function _settlement(work_id, dac_id) {
+            if($("#no").text() === "编号"){
+                _sweet_alert_with_buttons(
+                '确认结算',
+                '是否确认结算？',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        $("#active_work_id").val(work_id);
+                        $("#active_dac_id").val(dac_id);
+                        let formData = $("#active_work_form").serialize();
+                        _post('/proposal/settlement', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                _sweet_alert_notify('success', '结算成功', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify('error', res.message[0], '');
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }else{
+                _sweet_alert_with_buttons(
+                '',
+                'Please confirm the settlement to get the incentives.',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm) {
+                    if (isConfirm === false){
+                        $("#active_work_id").val(work_id);
+                        $("#active_dac_id").val(dac_id);
+                        let formData = $("#active_work_form").serialize();
+                        _post('/proposal/settlement', formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                _sweet_alert_notify('success', 'Success', '');
+                                _fresh_current_page(1000);
+                            }
+                            else{
+                                _sweet_alert_notify('error', res.message[0], '');
+                            }
+                        })
+                    }
+                    else{
+                        console.log("cancel");
+                    }
+                }
+
+            );
+            }
+
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "DAC/_layout.html" %}
+
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for("dac.index", dac_id=dac_id) }}">首页</a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page" style="line-height: 45px">工作管理</li>
+                <li class="breadcrumb-item active" aria-current="page" style="line-height: 45px">提交工作</li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+<!-- top bar username -->
+
+
+
+
+{% block content %}
+    <div class="content-page" id="content-page">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="iq-card">
+                    <div class="iq-card-body">
+                        <div class="row">
+                            <div class="col-lg-6 align-self-center">
+                                <h4 class="mb-0 float-left">工作提交</h4>
+                            </div>
+                            <div class="col-sm-12">
+                                <hr class="mt-3">
+                            </div>
+                        </div>
+
+                        <form class="mt-4" id="_submit">
+                            {{ form.csrf_token }}
+                            <div class="form-group" style="margin-left: 5%; margin-right: 5%">
+                                <label for="wikiURI">交付地址：</label>
+                                <input type="text" class="form-control mb-0" id="wikiURI" name="work_id" readonly="readonly" value="{{ wiki_uri }}">
+                            </div>
+                            <div class="form-group" style="display: none">
+                                <input type="text" class="form-control mb-0" id="content" name="content" value="">
+                            </div>
+                        </form>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="table-responsive-sm"></div>
+                                <div class="editormd" id="test-editormd">
+                                    <textarea class="editormd-markdown-textarea" name="markdown-doc" id="doc1"></textarea>
+                                    <textarea class="editormd-html-textarea" name="html" id="doc2"></textarea>
+                                </div>
+                                <button type="button" class="btn-primary" style="padding: 5px 25px 5px 25px; border-radius: 5px" onclick="_submit()">提交</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        editormd(
+            "test-editormd",
+            {
+                width: "90%",
+                height: 640,
+                syncScrolling: "single",
+                path: "/static/editor/lib/",
+                saveHTMLToTextarea: true
+            }
+        );
+        function _submit() {
+            _sweet_alert_with_buttons(
+                '提交任务',
+                '是否确定提交任务',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm){
+                    if (isConfirm === false){
+                        let content = document.getElementById("doc1");
+                        let formData = $("#_submit").serialize();
+                        console.log(formData + "content=" + content.value);
+                        let newData = formData + "content=" + content.value;
+                        _post("/proposal/{{ dac_id }}/{{ work_id }}/submit", newData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                _sweet_alert_notify('success', '提交任务成功', '');
+                                window.setTimeout(
+                                    function () {
+                                        window.location.href='/proposal/{{ dac_id }}/get'
+                                    },
+                                    1000
+                                );
+                            }
+                            else{
+                                console.log("err");
+                            }
+                        })
+                    }
+                    else{
+                        console.log("err");
+                    }
+                }
+            );
+        }
+    </script>
+{% endblock %}

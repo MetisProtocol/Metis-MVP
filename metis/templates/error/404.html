@@ -1,0 +1,25 @@
+{% extends "DAC/_layout.html" %}
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height">{{ user_info.username }}</h5>
+        <span class="text-white font-size-12">{{ user_info.email }}</span>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="content-page" id="page-content">
+        <div class="container-fluid">
+            <div class="row">
+               <div class="col-sm-12 text-center">
+                   <div class="iq-error">
+                       <img src="{{ url_for('static', filename='images/error/01.png') }}" class="img-fluid iq-error-img" alt="">
+                       <h3 class="mb-0 mt-4">Oops! This DAC is Not Found.</h3>
+                       <p>The DAC dose not exist.</p>
+                       <a class="btn btn-primary mt-3" href="{{ url_for("home.index") }}"><i class="ri-home-4-line"></i>Back to Home</a>
+                   </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

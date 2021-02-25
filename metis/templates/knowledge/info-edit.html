@@ -1,0 +1,75 @@
+{% block content %}
+
+    <body style="background: #ffffff;min-height: 550px">
+
+    <!-- Begin page -->
+    <div id="wrapper">
+        <div class="content-page" style="margin-left: 30px!important;margin-top: 10px">
+
+            <!-- end table-responsive-->
+            <form class="form" id="_news_form">
+                {{ form.csrf_token }}
+                <div class="group">
+                    <div style="width: 900px; margin: 0 auto">
+                        <textarea id="_memo" style="width: 900px;height: 600px">{{ knowledge_memo }}</textarea>
+                    </div>
+                    <input type="hidden" name="knowledge_info_memo" value="" />
+                    <input type="hidden" name="knowledge_info_type" value="{{ knowledge_type if knowledge_type else 'joiner'}}" />
+                </div>
+                <button type="button" class="btn btn-info col-sm-3 i18n"
+                        style="height: 40px; width: 160px;margin: 10px 10px 0 0;" onclick="_submit();" name="submit">Submit
+                </button>
+            </form>
+
+        </div> <!-- end card body-->
+    </div> <!-- end card -->
+
+    </div>
+
+    </body>
+{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.appear.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/countdown.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/waypoints.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.counterup.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/apexcharts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.i18n.properties-1.0.9.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/smooth-scrollbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lottie.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart-custom.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/alert/js/alert.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/sweetalert/js/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='editor/editormd.amd.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/nicEdit.js') }}"></script>
+<script>
+    editor = new nicEditor().panelInstance('_memo');
+
+    function _submit() {
+        $("[name='knowledge_info_memo']").val(editor.nicInstances[0].getContent());
+        console.log($("#_news_form").serialize());
+        _post("/knowledge/{{ dac_id }}/{{ knowledge_detail_id }}/info-edit", $("#_news_form").serialize(), function (resp) {
+            var ret = $.parseJSON(resp);
+
+            if (ret.code === 'ok') {
+                {#_sweet_alert_notify('success', '添加成功', '');#}
+                parent.location.reload()
+            } else {
+                _sweet_alert_notify('success', ret.message[0], '');
+            }
+        })
+    }
+</script>

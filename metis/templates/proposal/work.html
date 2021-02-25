@@ -1,0 +1,505 @@
+{% extends "DAC/_layout.html" %}
+{% from "macro.html" import display_work_status %}
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for("dac.index", dac_id=dac_id) }}">工作内容</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+
+<!-- Page Content -->
+{% block content %}
+
+    <div id="content-page" class="content-page">
+        <div class="container-fluid">
+            <div class="row">
+
+                <!-- content -->
+                <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-lg-9 profile-left">
+                        <div class="tab-content" style="margin-bottom: 20px;padding: 0">
+                            <div class="tab-pane active show" id="working" role="tabpanel">
+                                <div class="card-box">
+                                    <div class="iq-card-header d-flex justify-content-between">
+                                        <div class="iq-header-title">
+                                            <h2 class="card-title">{{ work.work_name }}</h2>
+                                        </div>
+                                    </div>
+                                    <div class="iq-card-body">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    <div class="tab-content" style="margin-bottom: 20px;padding: 0">
+                            <div class="tab-pane active show" id="working" role="tabpanel">
+                                <div class="card-box">
+                                    <div class="iq-card-header d-flex justify-content-between">
+                                        <div class="iq-header-title">
+                                            <h2 class="card-title i18n" name="tasts_statement"></h2>
+
+                                        </div>
+                                        {% if current_user.uid == work.publisher and (work.work_status == 1 or work.work_status == 0) %}
+                                        <button class="btn btn-info i18n" name="edit" onclick="_transfer('/proposal/{{ dac_id }}/{{ work.work_id }}/edit?work_type=describe')" type="button" style="height: 35px">
+
+                                           </button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="iq-card-body">
+                                        {{ (work_info.work_describe if work_info.work_describe else '') | safe }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" style="padding: 0">
+                            <div class="tab-pane active show" id="working" role="tabpanel">
+                                <div class="card-box">
+                                    <div class="iq-card-header d-flex justify-content-between">
+                                        <div class="iq-header-title">
+                                            <h2 class="card-title i18n" name="deliverables"></h2>
+
+                                        </div>
+                                        {% if current_user.uid == work.participants and work.work_status == 1 %}
+                                        <button class="btn btn-info i18n" name="edit" onclick="_transfer_result('/proposal/{{ dac_id }}/{{ work.work_id }}/edit?work_type=memo')" type="button" style="height: 35px">
+
+                                           </button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="iq-card-body">
+                                        {{ (work_info.work_memo if work_info.work_memo else '') | safe }}
+                                    </div>
+                                    <div class="iq-card-header d-flex justify-content-between" style="margin-top: 70px">
+                                        <div class="iq-header-title">
+                                            <h2 class="card-title i18n" name="enclosure"></h2>
+                                        </div>
+                                    </div>
+                                    <div class="iq-card-body">
+                                        {% if names and links and sizes %}
+                                            <div class="dropzone">
+                                            {% for name in names %}
+                                            <div class="dz-preview dz-file-preview dz-processing dz-success dz-complete" style="position: relative;cursor: pointer">
+                                                <div class="dz-image">
+                                                    <img data-dz-thumbnail="">
+                                                </div>
+                                                <div class="dz-details">
+                                                    <div class="dz-size">
+                                                        <span data-dz-size="">
+                                                            <strong>{{ sizes[loop.index0] }}</strong>
+                                                        </span>
+                                                    </div>
+                                                    <div class="dz-filename">
+                                                        <span data-dz-name="">{{ names[loop.index0] }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="dz-progress">
+                                                    <span class="dz-upload" data-dz-uploadprogress="" style="width: 100%;"></span>
+                                                </div>
+                                                <div class="dz-error-message">
+                                                    <span data-dz-errormessage=""></span>
+                                                </div>
+                                                <a href="{{ links[loop.index0] }}" download="{{ names[loop.index0] }}" style="position: absolute; z-index: 999; width: 100%;height: 100%;top: 0;left:0"></a>
+                                            </div>
+                                            {% endfor %}
+                                            </div>
+                                    {% endif %}
+                                    </div>
+                                    {% if current_user.uid == work.participants and work.work_status == 1 %}
+                                        <button class="btn btn-info col-sm-2 i18n" name="submit" onclick="_submit()" type="button" style="margin-top: 50px">
+                                              Submit
+                                   </button>
+                                    {% endif %}
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 profile-right">
+                        <div class="card-box">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="iq-header-title i18n" name="initiator"></h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <ul class="suggestions-lists m-0 p-0">
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="user-img img-fluid">
+                                            <img src="{{ url_for('static', filename='uploads/' + members_logo[work.publisher]) }}" alt="user-img" title="Mat Helme" class="rounded-circle img-fluid" style="height: 70px; margin-bottom: 10px">
+                                        </div>
+                                        <div class="media-support-info ml-3">
+                                            <h6>{{ work.publisher }}</h6>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-box">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="iq-header-title i18n" name="collaborator"></h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <ul class="suggestions-lists m-0 p-0">
+                                    {% if work.participants %}
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="user-img img-fluid">
+                                            <img src="{{ url_for('static', filename='uploads/' + members_logo[work.participants]) }}" alt="user-img" title="Mat Helme" class="rounded-circle img-fluid" style="height: 70px; margin-bottom: 10px">
+                                        </div>
+                                        <div class="media-support-info ml-3">
+                                            <h6>{{ work.participants }}</h6>
+                                        </div>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-box">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="iq-header-title i18n" name="_status" id="_status"></h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <ul class="suggestions-lists m-0 p-0">
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="media-support-info ml-3">
+                                            <h6>
+                                                {{ display_work_status(work.work_status) }}
+                                            </h6>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-box">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="iq-header-title i18n" name="task_rules"></h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <ul class="suggestions-lists m-0 p-0">
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="media-support-info ml-3">
+                                            <h6><span class="i18n" name="incentives"></span>：{{ work.work_excitation }} M Token</h6>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mb-4 align-items-center">
+                                        <div class="media-support-info ml-3">
+                                            <h6><span class="i18n" name="date_requirement"></span>{{ work.work_expiry }}</h6>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <form class="mt-4" id="_submit" style="display: none">
+                            {{ form.csrf_token }}
+                            <div class="form-group" style="margin-left: 5%; margin-right: 5%">
+                                <label for="wikiURI">交付地址：</label>
+                                <input type="text" class="form-control mb-0" id="wikiURI" name="work_id" readonly="readonly" value="{{ work_id }}">
+                            </div>
+                        </form>
+            </div>
+            </div>
+        </div>
+{#        <form id="knowledge_info_form" style="display: none">#}
+{#            {{ form.csrf_token }}#}
+{#            <input type="text" id="knowledge_detail_name" name="knowledge_detail_name" value="{{ knowledge.knowledge_detail_name }}">#}
+{#            <input type="text" id="knowledge_describe" name="knowledge_describe" value="{{ knowledge.knowledge_describe }}">#}
+{#            <input type="text" id="knowledge_detail_writer_pledge" name="knowledge_detail_writer_pledge" value="{{ json.loads(knowledge.knowledge_detail_writer_balance).pledge }}">#}
+{#            <input type="text" id="knowledge_detail_joiner_pledge" name="knowledge_detail_joiner_pledge" value="{{ json.loads(knowledge.knowledge_detail_joiner_balance).pledge }}">#}
+{#            <input type="text" id="knowledge_detail_writer_excitation" name="knowledge_detail_writer_excitation" value="{{ json.loads(knowledge.knowledge_detail_writer_balance).excitation }}">#}
+{#            <input type="text" id="knowledge_detail_joiner_excitation" name="knowledge_detail_joiner_excitation" value="{{ json.loads(knowledge.knowledge_detail_joiner_balance).excitation }}">#}
+{#        </form>#}
+    </div>
+{% endblock %}
+
+<!-- script -->
+{% block script %}
+    {{ super() }}
+    <script>
+    $(function(){
+            if (!navigator.userAgent.match(/mobile/i)) {
+         //PC端
+              $("#float-left").hide()
+                 }else{
+         //移动端
+              $("#float-left").show()
+         }
+         })
+        function _transfer(val) {
+            $(".iframe").remove();
+            let pos = '<div style="display: none" class="iframe"><iframe src="' + val + '" frameborder="0" id="iframe" width="' + $(window).width() * 0.9 + 'px' + '" height="500px"></iframe></div>';
+            $(pos).appendTo($(".col-sm-12"));
+            var M = {};
+            if(M.dialog6){
+                return M.dialog6.show();
+            }
+            if($("#_status").text()==="编辑"){
+                M.dialog6 = jqueryAlert({
+                'style'   : 'pc',
+                'title'   : '编辑工作描述',
+                'content' :  $("#iframe"),
+                'modal'   : true,
+                'contentTextAlign' : 'left',
+                'width'   : 'auto',
+                'animateType' : 'linear',
+                'buttons' :{
+                    '关闭' : function(){
+                        M.dialog6.close();
+                    },
+                }
+            })
+            }else{
+                M.dialog6 = jqueryAlert({
+                'style'   : 'pc',
+                'title'   : 'Edit Tasks Statement',
+                'content' :  $("#iframe"),
+                'modal'   : true,
+                'contentTextAlign' : 'left',
+                'width'   : 'auto',
+                'animateType' : 'linear',
+                'buttons' :{
+                    'Close' : function(){
+                        M.dialog6.close();
+                    },
+                }
+            })
+            }
+        }
+
+        function _transfer_result(val) {
+            $(".iframe").remove();
+            let pos = '<div style="display: none" class="iframe"><iframe src="' + val + '" frameborder="0" id="iframe" width="' + $(window).width() * 0.9 + 'px' + '" height="500px"></iframe></div>';
+            $(pos).appendTo($(".col-sm-12"));
+            var M = {};
+            if(M.dialog6){
+                return M.dialog6.show();
+            }
+            if($("#_status").text()==="编辑"){
+            M.dialog6 = jqueryAlert({
+                'style'   : 'pc',
+                'title'   : '编辑交付内容',
+                'content' :  $("#iframe"),
+                'modal'   : true,
+                'contentTextAlign' : 'left',
+                'width'   : 'auto',
+                'animateType' : 'linear',
+                'buttons' :{
+                    '关闭' : function(){
+                        M.dialog6.close();
+                    },
+                }
+            })
+        }else{
+            M.dialog6 = jqueryAlert({
+                'style'   : 'pc',
+                'title'   : 'Edit Deliverables',
+                'content' :  $("#iframe"),
+                'modal'   : true,
+                'contentTextAlign' : 'left',
+                'width'   : 'auto',
+                'animateType' : 'linear',
+                'buttons' :{
+                    'Close' : function(){
+                        M.dialog6.close();
+                    },
+                }
+            })
+        }
+        }
+
+        function _submit() {
+            if($("#_status").text()==="编辑"){
+                _sweet_alert_with_buttons(
+                '提交任务',
+                '是否确定提交任务',
+                'warning',
+                '确定',
+                '取消',
+                function (isConfirm){
+                    if (isConfirm === false){
+                        let formData = $("#_submit").serialize();
+                        _post("/proposal/{{ dac_id }}/{{ work.work_id }}/submit", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                _sweet_alert_notify('success', '提交任务成功', '');
+                                window.setTimeout(
+                                    function () {
+                                        window.location.href='/proposal/{{ dac_id }}/get'
+                                    },
+                                    1000
+                                );
+                            }
+                            else{
+                                console.log("err");
+                            }
+                        })
+                    }
+                    else{
+                        console.log("err");
+                    }
+                }
+            );
+                }
+            else{
+                _sweet_alert_with_buttons(
+                'Submit？',
+                '',
+                'warning',
+                'OK',
+                'Cancel',
+                function (isConfirm){
+                    if (isConfirm === false){
+                        let formData = $("#_submit").serialize();
+                        _post("/proposal/{{ dac_id }}/{{ work.work_id }}/submit", formData, function (resp) {
+                            let res = $.parseJSON(resp);
+                            if (res.code === 'ok'){
+                                _sweet_alert_notify('success', 'Success', '');
+                                window.setTimeout(
+                                    function () {
+                                        window.location.href='/proposal/{{ dac_id }}/get'
+                                    },
+                                    1000
+                                );
+                            }
+                            else{
+                                console.log("err");
+                            }
+                        })
+                    }
+                    else{
+                        console.log("err");
+                    }
+                }
+            );
+
+                }
+
+        }
+        function _download(url) {
+            window.open(url)
+        }
+        {##}
+        {#function _edit(data, val) {#}
+        {#    _sweet_alert_with_buttons(#}
+        {#        '修改' + data + '的信息',#}
+        {#        '<input class="form-control mb-0" style="width: 80%; margin-left:10%" type="text" value="" id="edit" placeholder="'+ data +'">',#}
+        {#        'warning',#}
+        {#        '确定',#}
+        {#        '取消',#}
+        {#        function (isConfirm) {#}
+        {#            if (isConfirm === false){#}
+        {#                $("#"+val).val($("#edit").val());#}
+        {#                let formData = $("#knowledge_info_form").serialize();#}
+        {#                _post('/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}' + '/info', formData, function (resp) {#}
+        {#                    let res = $.parseJSON(resp);#}
+        {#                    if (res.code === 'ok') {#}
+        {#                        _sweet_alert_notify('success', '编辑成功', '');#}
+        {#                        _fresh_current_page(1000);#}
+        {#                    }#}
+        {#                    else {#}
+        {#                        _sweet_alert_notify('error', res.message, '')#}
+        {#                    }#}
+        {#                });#}
+        {#            }else {#}
+        {#                console.log("cancel");#}
+        {#            }#}
+        {#        }#}
+        {#    )#}
+        {#}#}
+        {##}
+        {#function _fabulous(knowledge_id, val) {#}
+        {#    _get('/knowledge/'+ knowledge_id + '/fabulous', '', function (resp) {#}
+        {#        let res = $.parseJSON(resp);#}
+        {#        if (res.code === 'ok'){#}
+        {#            val.text('已赞');#}
+        {#            val.attr("disabled","disabled")#}
+        {#        }#}
+        {#    })#}
+        {#}#}
+        {##}
+        {#function _for_transfer(dac_id, addr) {#}
+        {#    _sweet_alert_with_buttons(#}
+        {#        '转账',#}
+        {#        '<form id="transfer_form">\n' +#}
+        {#        '{{ transfer_form.csrf_token }}\n' +#}
+        {#        '<input type="password" class="form-control mb-0" name="private_key" placeholder="您的私钥">\n' +#}
+        {#        '<input type="text" value="'+ addr +'" class="form-control mb-0" id="eth" name="receiver_eth" placeholder="收款人（公钥）" style="display:none">\n' +#}
+        {#        '<input type="text" class="form-control mb-0" name="amount" id="balance" placeholder="转账金额（M）">\n' +#}
+        {#        '</form>',#}
+        {#        'warning',#}
+        {#        '确定',#}
+        {#        '取消',#}
+        {#        function (isConfirm) {#}
+        {#            let balance = $("#balance").val();#}
+        {#            let eth = $("#eth").val();#}
+        {#            let formData = $("#transfer_form").serialize();#}
+        {#            if (isConfirm === false){#}
+        {#                _post("/member/" + dac_id +"/info", formData, function (resp) {#}
+        {#                    let res = $.parseJSON(resp);#}
+        {#                    if (res.code === 'ok'){#}
+        {#                        tip(balance + "M Token, 已从您的账户转到" + eth );#}
+        {#                        _sweet_alert_notify('success', '打赏成功', '');#}
+        {#                        _fresh_current_page(1000);#}
+        {#                    }#}
+        {#                    else{#}
+        {#                        _sweet_alert_notify(res[1]);#}
+        {#                    }#}
+        {#                })#}
+        {#            }#}
+        {#            else{#}
+        {#                console.log("cancel");#}
+        {#            }#}
+        {#        }#}
+        {##}
+        {#    );#}
+        {#}#}
+        {##}
+        {#function _submit_writer() {#}
+        {#    _sweet_alert_with_buttons(#}
+        {#        '是否确认提交记录内容',#}
+        {#        '',#}
+        {#        'warning',#}
+        {#        '确定',#}
+        {#        '取消',#}
+        {#        function (isConfirm) {#}
+        {#            if (isConfirm === false) {#}
+        {#                // confirm#}
+        {#                _get('/knowledge/{{ dac_id }}/{{ knowledge.knowledge_detail_id }}/submit' , '', function (resp) {#}
+        {#                    let res = $.parseJSON(resp);#}
+        {#                    if (res.code === 'ok') {#}
+        {#                        _sweet_alert_notify('success', '提交成功，请等待发起人审核', '');#}
+        {#                        _fresh_current_page(1000);#}
+        {#                    } else {#}
+        {#                        _sweet_alert_notify('error', res.message, '')#}
+        {#                    }#}
+        {#                });#}
+        {#                // 如果探测到双方是首次合作，返回一个特殊标记，提醒用户进行质押#}
+        {#            } else {#}
+        {#                //cancel#}
+        {#                console.log("cancel");#}
+        {#            }#}
+        {#        }#}
+        {#    );#}
+        {#}#}
+    </script>
+
+{% endblock %}

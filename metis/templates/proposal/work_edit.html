@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <!-- meta -->
+      <meta charset="UTF-8">
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="author" content="Metis Team">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
+      <meta charset="utf-8">
+
+       <!-- title -->
+      <title>Metis Protocol</title>
+      <!-- Favicon -->
+{#      <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />#}
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.min.css') }}">
+      <!-- Typography CSS -->
+      <link rel="stylesheet" href="{{ url_for('static', filename='libs/dropzone/dropzone.min.css') }}">
+      <!-- Style CSS -->
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/app.min.css') }}">
+      <!-- Responsive CSS -->
+      <!-- alert css -->
+
+   </head>
+{% block content %}
+
+    <body style="background: #ffffff;min-height: 550px">
+
+    <!-- Begin page -->
+    <div id="wrapper">
+        <div class="content-page" style="margin-left: 30px!important;margin-top: 10px">
+
+            <!-- end table-responsive-->
+            <form class="form" id="_news_form">
+                {{ form.csrf_token }}
+                <div class="group">
+                    <div style="width: 900px; margin: 0 auto">
+                        <textarea id="_memo" style="width: 900px;height: 600px">{{ (work_info.work_memo if work_info.work_memo else '') if work_type == 'memo' else (work_info.work_describe if work_info.work_describe else '') }}</textarea>
+                    </div>
+                    <input type="hidden" name="work_memo" value="" />
+                    <input type="hidden" name="work_type" value="{{ work_type }}" />
+                    <input type="hidden" name="enclosure" value="" />
+                </div>
+            </form>
+            {% if work_type == 'memo' %}
+            <form action="/" method="post" class="dropzone" id="myAwesomeDropzone" style="width: 900px; margin: 0 auto">
+                {{ form.csrf_token }}
+                <div class="fallback">
+                    <input name="file" type="file" multiple />
+                </div>
+                {% if names and links and sizes %}
+                    {% for name in names %}
+                    <div class="dz-preview dz-file-preview dz-processing dz-success dz-complete" style="position: relative;">
+                        <div class="dz-image">
+                            <img data-dz-thumbnail="">
+                        </div>
+                        <div class="dz-details">
+                            <div class="dz-size">
+                                <span data-dz-size="">
+                                    <strong>{{ sizes[loop.index0] }}</strong>
+                                </span>
+                            </div>
+                            <div class="dz-filename">
+                                <span data-dz-name="">{{ names[loop.index0] }}</span>
+                            </div>
+                        </div>
+                        <div class="dz-progress">
+                            <span class="dz-upload" data-dz-uploadprogress="" style="width: 100%;"></span>
+                        </div>
+                        <div class="dz-error-message">
+                            <span data-dz-errormessage=""></span>
+                        </div>
+                        <a class="delete" style="position: absolute;top: 5px;right: 5px; width: 20px; height: 20px; z-index: 999" href="javascript: void(0);" onclick="_delete($(this))">
+                            <img style=" width: 20px; height: 20px" src="/static/images/delete.png">
+                        </a>
+                        <input type="hidden" data-url="{{ links[loop.index0] }}" data-filename="{{ names[loop.index0] }}" class="file_url">
+                    </div>
+                    {% endfor %}
+                {% else %}
+                        <div class="dz-message needsclick">
+                            <i class="h1 text-muted dripicons-cloud-upload"></i>
+                            <h3>Please click or drag your files here to upload your deliverables</h3>
+{#                            <h3>请上传您的附件</h3>#}
+{#                            <span class="text-muted font-13">请点击上传或拖拽文件</span>#}
+{#                            <span class="text-muted font-13">请点击上传或拖拽文件</span>#}
+                        </div>
+            {% endif %}
+            </form>
+            {% endif %}
+            <button type="button" class="btn btn-info col-sm-3 i18n"
+                        style="height: 40px; width: 160px;margin: 10px 10px 0 0;" onclick="_submit();" name="submit">Submit
+                </button>
+
+        </div> <!-- end card body-->
+    </div> <!-- end card -->
+    </div>
+
+    </body>
+{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/sweetalert/js/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='editor/editormd.amd.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/nicEdit.js') }}"></script>
+    <script src="{{ url_for('static', filename='libs/dropzone/dropzone.min.js') }}"></script>
+   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+    editor = new nicEditor().panelInstance('_memo');
+    $("#myAwesomeDropzone").dropzone({
+        url: "/file",
+        init: function() {
+            this.on("success", function (file, response) {
+                let size = $(file.previewElement).find($(".dz-size")).text();
+                $(file.previewElement).css("position", "relative");
+                let ret = $.parseJSON(response);
+                let url =  "http://mvp.metis.apple-store-signature.com/static/uploads/" + ret;
+                var data = '<a class="delete" style="position: absolute;top: 5px;right: 5px; width: 20px; height: 20px; z-index: 999" href="javascript: void(0);" onclick="_delete($(this))">' + '<img style=" width: 20px; height: 20px" src="' +
+                    '{{ url_for("static", filename="images/delete.png") }}' + '">' + '</a>' +
+                    '<input type="hidden" data-url="' + url + '" data-filename="' + file.name + '" data-size="'+ size +'" class="file_url">';
+                $(data).appendTo($(file.previewElement))
+            })
+        }
+        });
+    function _submit() {
+        let files = $(".file_url");
+        let links = [];
+        let names = [];
+        let sizes = [];
+        $.each(files, function (index, file) {
+            let url = $(file).data('url');
+            let filename = $(file).data('filename');
+            let size = $(file).data('size');
+            links.push(url);
+            names.push(filename);
+            sizes.push(size)
+        });
+        let enclosure = {
+            'names': names,
+            'links': links,
+            'sizes': sizes
+        };
+        $("[name='enclosure']").val(JSON.stringify(enclosure));
+
+
+        $("[name='work_memo']").val(editor.nicInstances[0].getContent());
+        console.log($("#_news_form").serialize());
+        _post("/proposal/{{ dac_id }}/{{ work_info.work_id }}/edit", $("#_news_form").serialize(), function (resp) {
+            var ret = $.parseJSON(resp);
+
+            if (ret.code === 'ok') {
+                {#_sweet_alert_notify('success', '添加成功', '');#}
+                parent.location.reload()
+            } else {
+                _sweet_alert_notify('success', ret.message[0], '');
+            }
+        })
+    }
+    function _delete(val) {
+        val.parent().remove()
+    }
+</script>

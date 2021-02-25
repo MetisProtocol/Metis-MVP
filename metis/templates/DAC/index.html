@@ -1,0 +1,575 @@
+{% extends "DAC/_layout.html" %}
+{% from "macro.html" import display_work_status %}
+<!-- breadcrumb -->
+{% block breadcrumb %}
+    <div class="navbar-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item" style="line-height: 45px">
+                    <a href="{{ url_for("dac.index", dac_id=dac_id) }}">首页</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+<!-- top bar username -->
+
+{% block username %}
+    <div class="bg-primary p-3">
+        <h5 class="mb-0 text-white line-height">{{ user_info.username }}</h5>
+        <span class="text-white font-size-12">{{ user_info.email }}</span>
+    </div>
+{% endblock %}
+<!-- Page Content -->
+{% block content %}
+    <div class="content-page">
+                <div class="content">
+
+                    <!-- Start Content-->
+                    <div class="container-fluid">
+
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box">
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);">DAC</a></li>
+                                            <li class="breadcrumb-item active i18n" name="dac_index" id="dac_list">DAC 首页</li>
+                                        </ol>
+                                    </div>
+                                    <h4 class="page-title i18n" name="dac_index">DAC 首页</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+
+                        <div class="row">
+                            <div class="col-xl-12 stretch-card">
+                                <div class="card-box card-gradient">
+                                    <div class="row">
+                                        <div class="col-xl-4 p-20" style="line-height: 310px;text-align: center">
+                                            {% if dac_info.dac_logo %}
+                                                <img src="../../static/uploads/{{ dac_info.dac_logo }}" alt="" style="width: 200px; margin: 0 auto">
+                                            {% else %}
+                                               <img src="{{ url_for('static', filename='images/metis_logo.png') }}" alt="" style="width: 200px;height: 200px; margin: 0 auto">
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-xl-8 p-20">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <h4 class="header-title i18n" name="dac_name"></h4>
+                                                    <h3>{{ dac_info.dac_name }}</h3>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="float-right">
+                                                        <h4 class="header-title i18n" name="token_balance"></h4>
+                                                        <h3>{{ balance }}M Token</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="p-process">
+                                                <p>{{ dac_info.dac_description }}&nbsp;</p>
+                                                <div class="progress mb-7" style="height: 3px;">
+                                                    <div class="progress-bar bg-info" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <h4 class="header-title i18n" name="team_total"></h4>
+                                                    <h3>{{ (dac_info.dac_members | length) + 1 }}</h3>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="float-right">
+                                                        <h4 class="header-title i18n" name="role"></h4>
+                                                        <h3>
+                                                            {% if is_admin %}
+                                                             <span class="i18n" name="dac_initiator"></span>
+                                                            {% else %}
+                                                             <span class="i18n" name="member"></span>
+                                                            {% endif %}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div> <!-- end card-box-->
+                            </div> <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <div class="row">
+                            <div class="col-xl-8 stretch-card">
+                                <div class="card-box">
+                                    <h4 class="header-title mb-4 i18n" name="my_task"></h4>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-centered table-hover mb-0">
+                                            <thead>
+                                        <tr>
+                                            <th class="i18n" name="no."></th>
+                                            <th class="i18n" name="name"></th>
+                                            <th class="i18n" name="create_date"></th>
+                                            <th class="i18n" name="status"></th>
+                                            <th class="i18n" name="team"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for work in on_work %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td onclick="show_table_hidden($(this))" style="cursor:pointer; text-align: center">{{ work.work_name }}</td>
+                                            <td>{{ work.ctime }}</td>
+                                            <td>{{ display_work_status(work.work_status) }}</td>
+                                            <td>{{ work.participants if work.participants else "" }}</td>
+                                        </tr>
+
+                                        <tr style="display: none">
+                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">
+                                                <span class="i18n" name="task_rules">工作简介链接</span><span>：<a
+                                                            href="/proposal/{{ dac_id }}/{{ work.work_id }}/info" class="i18n" name="check">点击查看</a></span>
+                                            </td>
+                                        </tr>
+                                        <tr style="display: none">
+                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">
+                                                <span class="i18n" name="date_requirement">时间要求：</span><span>{{ work.work_deadline.strftime('%Y-%m-%d') }}</span>
+                                            </td>
+                                        </tr>
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span class="i18n" name="staked">质押</span><span>token：</span><span>{{ work.work_excitation }}M Token</span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+                                        <tr style="display: none">
+                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">
+                                                <span class="i18n" name="incentives">激励：</span><span>{{ work.work_excitation }}M Token</span>
+                                            </td>
+                                        </tr>
+                                        <tr style="display: none">
+                                            <td colspan="2" style="text-align: left; padding-left: 20px;">
+                                                {% if not is_admin and work.work_status == 0 %}
+                                                <button type="button" class="btn btn-primary i18n" name="want_claim" onclick="claim_work_btn('{{ work.work_id }}', '{{ work.work_publisher }}')">申领</button>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                        </table>
+                                    </div>
+
+                                </div> <!-- end card-box-->
+                            </div> <!-- end col-->
+
+                            <div class="col-xl-4 stretch-card">
+                                <div class="card-box">
+                                    <h4 class="header-title mb-3 i18n" name="team"></h4>
+                                    <div class="row text-center">
+                                        <div class="col-sm-4 mb-3">
+{#                                            <img src="{{ url_for('static', filename='uploads/' + current_user.logo) }}" alt="story-img" class="rounded-circle avatar-40" style="margin-bottom: 10px">#}
+                                            <img src="{{ url_for('static', filename='uploads/'+ dac_info.dac_admin_logo) }}" alt="user-img" title="Mat Helme" class="rounded-circle img-fluid" style="height: 70px; margin-bottom: 10px">
+                                            <p class="text-muted text-overflow">{{ dac_info.dac_admin[0:10] }}...</p>
+                                        </div>
+                                        {% for member in dac_info.dac_members %}
+{#                                        <li class="d-flex mb-4 align-items-center">#}
+{#                                            <div class="user-img img-fluid">#}
+{#                                                <img src="{{ url_for('static', filename='images/user/01.jpg') }}" alt="story-img" class="rounded-circle avatar-40" style="width: 30px;height: 30px">#}
+{#                                            </div>#}
+{#                                            <div class="media-support-info ml-3">#}
+{#                                                <h6>{{ member }}</h6>#}
+{#                                            </div>#}
+{#                                        </li>#}
+                                        <div class="col-sm-4 mb-3">
+{#                                            <img src="{{ url_for('static', filename='uploads/' + dac_info.dac_members_logo[loop.index0]) }}" alt="story-img" class="rounded-circle avatar-40" style="margin-bottom: 10px">#}
+                                            <img src="{{ url_for('static', filename='uploads/'+ dac_info.dac_members_logo[loop.index0]) }}" alt="user-img" title="Mat Helme" class="rounded-circle img-fluid" style="height: 70px; margin-bottom: 10px">
+                                            <p class="text-muted text-overflow">{{ member[0:10] }}...</p>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div> <!-- end card-box -->
+                            </div> <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <div class="row">
+                            <div class="col-xl-4 stretch-card">
+                                <div class="card-box">
+                                    <h4 class="header-title mb-3 i18n" name="time_line"></h4>
+                                    <div class="vertical-timeline-wrapper">
+                                        <div class="timeline-vertical dashboard-timeline">
+                                            {% for operation in operations %}
+                                            <div class="activity-log">
+                                                <p class="log-name">{{ account_dict[operation.account_uid].eth_addr[0:10] }}...</p>
+                                                <div class="log-details zh">
+                                                    {{ operation.operation_memo }}
+                                                </div>
+                                                <div class="log-details en">
+                                                    {{ operation.operation_memo_en }}
+                                                </div>
+                                                <small class="log-time">{{ operation.ctime }}</small>
+                                            </div>
+
+                                            {% endfor %}
+
+
+
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">Donald D. Kane</p>#}
+{#                                                <div class="log-details">We got monthy payment from Exclucive clients. Via Paypal, Skrill, MasterCard.#}
+{#                                                </div>#}
+{#                                                <small class="log-time">Just Now</small>#}
+{#                                            </div>#}
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">Courtney S. Parker</p>#}
+{#                                                <div class="log-details">We are start working not only USA Project & working on all other country#}
+{#                                                    <div class="grouped-images mt-2">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-5.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="William Weidner">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-4.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="Grant S. Gooch">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-3.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="Leo R. Berry">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-2.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="Thomas Arnold">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-1.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="William Weidner">#}
+{#                                                        <span class="plus-text img-sm">+12</span>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                                <small class="log-time">5 mins Ago</small>#}
+{#                                            </div>#}
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">Daniel C. Stewart</p>#}
+{#                                                <div class="log-details">Report has been updated. Approved your request.#}
+{#                                                    <div class="wrapper mt-2">#}
+{#                                                        <button type="button" class="btn btn-xs btn-primary">Approve</button>#}
+{#                                                        <button type="button" class="btn btn-xs btn-danger">Reject</button>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                                <small class="log-time">3 Hours Ago</small>#}
+{#                                            </div>#}
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">William A. Weidner</p>#}
+{#                                                <div class="log-details">We are done process of submitted project</div>#}
+{#                                                <small class="log-time">7 Hours Ago</small>#}
+{#                                            </div>#}
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">Franklin I. Hall</p>#}
+{#                                                <div class="log-details">We are completed a theme development.</div>#}
+{#                                                <small class="log-time">8 Hours Ago</small>#}
+{#                                            </div>#}
+                                        </div>
+                                    </div>
+{#                                    <a class="border-top activity py-2 d-block text-gray" href="#">#}
+{#                                        <small class="font-weight-medium"><i class="mdi mdi-chevron-down mr-2"></i> View All</small>#}
+{#                                    </a>#}
+                                </div> <!-- end card-box-->
+                            </div> <!-- end col -->
+
+                            <div class="col-xl-4 stretch-card">
+                                <div class="card-box">
+                                    <h4 class="header-title mb-3 i18n" name="my_time_line"></h4>
+                                    <div class="vertical-timeline-wrapper">
+                                        <div class="timeline-vertical dashboard-timeline">
+                                            {% for operation in operations_main %}
+                                            <div class="activity-log">
+                                                <p class="log-name">{{ account_dict[operation.account_uid].eth_addr[0:10] }}...</p>
+                                                <div class="log-details zh">
+                                                    {{ operation.operation_memo }}
+                                                </div>
+                                                <div class="log-details en">
+                                                    {{ operation.operation_memo_en }}
+                                                </div>
+                                                <small class="log-time">{{ operation.ctime }}</small>
+                                            </div>
+
+                                            {% endfor %}
+
+
+
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">Donald D. Kane</p>#}
+{#                                                <div class="log-details">We got monthy payment from Exclucive clients. Via Paypal, Skrill, MasterCard.#}
+{#                                                </div>#}
+{#                                                <small class="log-time">Just Now</small>#}
+{#                                            </div>#}
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">Courtney S. Parker</p>#}
+{#                                                <div class="log-details">We are start working not only USA Project & working on all other country#}
+{#                                                    <div class="grouped-images mt-2">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-5.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="William Weidner">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-4.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="Grant S. Gooch">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-3.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="Leo R. Berry">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-2.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="Thomas Arnold">#}
+{#                                                        <img class="img-sm" src="assets/images/users/avatar-1.jpg" alt="Profile Image" data-toggle="tooltip" title="" data-original-title="William Weidner">#}
+{#                                                        <span class="plus-text img-sm">+12</span>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                                <small class="log-time">5 mins Ago</small>#}
+{#                                            </div>#}
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">Daniel C. Stewart</p>#}
+{#                                                <div class="log-details">Report has been updated. Approved your request.#}
+{#                                                    <div class="wrapper mt-2">#}
+{#                                                        <button type="button" class="btn btn-xs btn-primary">Approve</button>#}
+{#                                                        <button type="button" class="btn btn-xs btn-danger">Reject</button>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                                <small class="log-time">3 Hours Ago</small>#}
+{#                                            </div>#}
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">William A. Weidner</p>#}
+{#                                                <div class="log-details">We are done process of submitted project</div>#}
+{#                                                <small class="log-time">7 Hours Ago</small>#}
+{#                                            </div>#}
+{#                                            <div class="activity-log">#}
+{#                                                <p class="log-name">Franklin I. Hall</p>#}
+{#                                                <div class="log-details">We are completed a theme development.</div>#}
+{#                                                <small class="log-time">8 Hours Ago</small>#}
+{#                                            </div>#}
+                                        </div>
+                                    </div>
+{#                                    <a class="border-top activity py-2 d-block text-gray" href="#">#}
+{#                                        <small class="font-weight-medium"><i class="mdi mdi-chevron-down mr-2"></i> View All</small>#}
+{#                                    </a>#}
+                                </div> <!-- end card-box-->
+                            </div> <!-- end col -->
+
+                            <div class="col-xl-4 stretch-card">
+                                <div class="card-box">
+                                    <h4 class="header-title mb-3 i18n" name="date"></h4>
+                                    <div class="calendar2">
+                                        <div id="inline-datepicker-example" class="datepicker"></div>
+                                    </div>
+                                </div> <!-- end card-box-->
+                            </div> <!-- end col -->
+                        </div>
+
+
+                    </div> <!-- container -->
+
+                </div> <!-- content -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{#            <div class="row">#}
+{#                <div class="col-md-9">#}
+{#                    <div class="card-box">#}
+{#                        <div class="iq-card-header d-flex justify-content-between">#}
+{#                             <div class="iq-card-title">#}
+{#                                 <h4 class="card-title">已发布的工作</h4>#}
+{#                             </div>#}
+{#                        </div>#}
+{#                        <div class="iq-card-body" id="working">#}
+{#                            <div class="table-responsive">#}
+{#                                <table class="table mb-0">#}
+{#                                    <thead class="thead-light">#}
+{#                                        <tr>#}
+{#                                            <th>编号</th>#}
+{#                                            <th>工作名称</th>#}
+{#                                            <th>创建日期</th>#}
+{#                                            <th>工作状态</th>#}
+{#                                            <th>团队</th>#}
+{#                                        </tr>#}
+{#                                    </thead>#}
+{#                                    <tbody>#}
+{#                                    {% for work in on_work %}#}
+{#                                        <tr>#}
+{#                                            <td>{{ loop.index }}</td>#}
+{#                                            <td onclick="show_table_hidden($(this))" style="cursor:pointer; text-align: center">{{ work.work_name }}</td>#}
+{#                                            <td>{{ work.ctime }}</td>#}
+{#                                            <td>{{ display_work_status(work.work_status) }}</td>#}
+{#                                            <td>{{ work.participants if work.participants else "" }}</td>#}
+{#                                        </tr>#}
+{##}
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span>工作简介链接: <a href="{{ work.work_describe }}">{{ work.work_describe }}</a></span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span>时间要求：{{ work.work_deadline.strftime('%Y-%m-%d') }}</span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span>质押token：</span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span>激励：{{ work.work_excitation }}M Token</span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr style="display: none">#}
+{#                                            <td colspan="2" style="text-align: left; padding-left: 20px;">#}
+{#                                                {% if not is_admin and work.work_status == 0 %}#}
+{#                                                <button type="button" class="btn btn-primary" onclick="claim_work_btn('{{ work.work_id }}', '{{ work.work_publisher }}')">申领</button>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                    {% endfor %}#}
+{#                                    </tbody>#}
+{#                                </table>#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="iq-card-body" id="finishedwork" style="display: none">#}
+{#                            <div class="table-responsive">#}
+{#                                <table class="table mb-0">#}
+{#                                    <thead class="thead-light">#}
+{#                                        <tr>#}
+{#                                            <th>编号</th>#}
+{#                                            <th>工作名称</th>#}
+{#                                            <th>创建日期</th>#}
+{#                                            <th>工作状态</th>#}
+{#                                            <th>团队</th>#}
+{#                                        </tr>#}
+{#                                    </thead>#}
+{#                                    <tbody>#}
+{#                                    {% for work in on_work %}#}
+{#                                        <tr>#}
+{#                                            <td>{{ loop.index }}</td>#}
+{#                                            <td onclick="show_table_hidden($(this))" style="cursor:pointer; text-align: center">{{ work.work_name }}</td>#}
+{#                                            <td>{{ work.ctime }}</td>#}
+{#                                            <td>{{ display_work_status(work.work_status) }}</td>#}
+{#                                            <td>{{ work.participants if work.participants else "" }}</td>#}
+{#                                        </tr>#}
+{##}
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span>工作简介链接: <a href="{{ work.work_describe }}">{{ work.work_describe }}</a></span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span>时间要求：{{ work.work_deadline.strftime('%Y-%m-%d') }}</span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span>质押token：</span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr style="display: none">#}
+{#                                            <td style="padding: 0; padding-left: 20px; font-size: 10px; font-weight: bold; text-align: left" colspan="2">#}
+{#                                                <span>激励：{{ work.work_excitation }}M Token</span>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr style="display: none">#}
+{#                                            <td colspan="2" style="text-align: left; padding-left: 20px;">#}
+{#                                                {% if not is_admin and work.work_status == 0 %}#}
+{#                                                <button type="button" class="btn btn-primary" onclick="claim_work_btn('{{ work.work_id }}', '{{ work.work_publisher }}')">申领</button>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                    {% endfor %}#}
+{#                                    </tbody>#}
+{#                                </table>#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{##}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+{#                    <div class="col-lg-3 profile-right">#}
+{#                        <div class="iq-card">#}
+{#                            <div class="iq-card-header d-flex justify-content-between">#}
+{#                                <div class="iq-header-title">#}
+{#                                    <h4 class="iq-header-title">DAC 成员</h4>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="iq-card-body">#}
+{#                                <ul class="suggestions-lists m-0 p-0">#}
+{#                                    {% for member in dac_info.dac_members %}#}
+{#                                    <li class="d-flex mb-4 align-items-center">#}
+{#                                        <div class="user-img img-fluid">#}
+{#                                            <img src="{{ url_for('static', filename='images/user/01.jpg') }}" alt="story-img" class="rounded-circle avatar-40">#}
+{#                                        </div>#}
+{#                                        <div class="media-support-info ml-3">#}
+{#                                            <h6>{{ member }}</h6>#}
+{#                                        </div>#}
+{#                                    </li>#}
+{#                                    {% endfor %}#}
+{#                                    <li class="d-flex mb-2 align-items-center">#}
+{#                                        <div class="text-left">#}
+{#                                            <label>邀请码：</label>#}
+{#                                            <span>1122332</span>#}
+{#                                        </div>#}
+{#                                    </li>#}
+{#                                    <li class="d-flex mb-2 align-items-center">#}
+{#                                        <div class="text-left">#}
+{#                                            <label>链 接：</label>#}
+{#                                            <span>1122332</span>#}
+{#                                        </div>#}
+{#                                    </li>#}
+{#                                </ul>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+                </div>
+            </div>
+{% endblock %}
+
+<!-- script -->
+{% block script %}
+    {{ super() }}
+        <script src="../../static/libs/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+        <script src="../../static/js/pages/dashboard.init.js"></script>
+
+        <!-- App js -->
+
+    <script>
+        $(document).ready(function () {
+            if($("#dac_list").text() === "DAC 首页"){
+                $(".zh").show();
+                $(".en").hide();
+            }else{
+                $(".en").show();
+                $(".zh").hide();
+            }
+        })
+        _switch_menu("_home");
+        function show_table_hidden(obj) {
+            let data = obj.parent().next();
+            if(data.css("display")==="none"){
+                data.show();
+                data.next().show();
+                data.next().next().show();
+                data.next().next().next().show();
+                data.next().next().next().next().show();
+            }
+            else{
+                data.hide();
+                data.next().hide();
+                data.next().next().hide();
+                data.next().next().next().hide();
+                data.next().next().next().next().hide();
+            }
+        }
+        function work_info(data) {
+            if (data === "working"){
+                $("#working").show()
+                $("#finishedwork").hide()
+            }else{
+                $("#working").hide()
+                $("#finishedwork").show()
+            }
+        }
+    </script>
+
+{% endblock %}
